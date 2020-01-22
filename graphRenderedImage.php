@@ -327,7 +327,7 @@ class graphRenderedImage{
 		}
 	}
 	/*
-	 * Graphgroesse kalkulierung
+	 * Graphgroesse Berechnung
 	 */
 	
 	function calcWordDim($font, $size, $text, $angle = 0){

@@ -15,7 +15,7 @@ $config=array(
 	"rightPadding" => 10,
 	"topPadding" => 10,
 	"bottomPadding" => 10,
-	"colLabelRotation" => 90,
+	"colLabelRotation" => 45,
 	"graphTitleFontSize" => 36,
 	"symbolSize" => 14,
 	"graphLineThickness"=>4,
@@ -200,10 +200,37 @@ $svg = $svgGraph->getSVG();
 echo '<td>'.$svg.'</td></tr>';
 
 /*
+ * Radar - Graph (not stacked)
+ */
+
+$graphData->title = 'Rendered Image | Pie - Graph';
+$graphImage = new graphRenderedImage($graphData);
+$graphImage->drawVertBarGraph();
+ob_start();
+$graphImage->outputImg();
+$binary = ob_get_clean();
+echo '<tr><td><img src="data:image/png;base64,'. base64_encode($binary) .'" width="100%" height="auto"></td>';
+
+$graphData->datasets = array();
+$graphData->addDataset(new dataset(0, array(26,15,10)));
+$graphData->addDataset(new dataset(-1, array(40,5,7)));
+$graphData->addDataset(new dataset(2, array(10,6,10)));
+$graphData->addDataset(new dataset(3, array(50,8.2,40)));
+$graphData->addDataset(new dataset(12, array(80,6,15)));
+$graphData->addDataset(new dataset(5, array(5,36,33)));
+
+$graphData->title = 'SVG | Netzdiagramm';
+$graphData->id = 'radarTest';
+$svgGraph = new graphSVGImage($graphData);
+$svgGraph->drawRadarChart();
+$svg = $svgGraph->getSVG();
+echo '<td>'.$svg.'</td></tr>';
+
+/*
  * Pie - Graph (not stacked)
  */
 $graphData->clearDatasets();
-$graphData->addDataset(new dataset(0, array(100,200,60),array('#FFCC68', '#999EFF','#FF6682')));
+$graphData->addDataset(new dataset(0, array(180,120,60),array('#FFCC68', '#999EFF','#FF6682')));
 //$graphData->addDataset(new dataset(0, array(75),array('#999EFF')));
 //$graphData->addDataset(new dataset(0, array(208),array()));
 
@@ -215,10 +242,10 @@ $graphImage->outputImg();
 $binary = ob_get_clean();
 echo '<tr><td><img src="data:image/png;base64,'. base64_encode($binary) .'" width="100%" height="auto"></td>';
 $graphData->title = 'SVG | Pie - Graph';
-$graphData->id = 'scatterTest';
+$graphData->id = 'pieTest';
 $svgGraph = new graphSVGImage($graphData);
-//$svgGraph->drawLineGraph();
-//$svg = $svgGraph->getSVG();
+$svgGraph->drawPieChart();
+$svg = $svgGraph->getSVG();
 echo '<td>'.$svg.'</td></tr>';
 
 echo '</table></center>';

@@ -299,23 +299,149 @@ class graphSVGImage{
 		}
 		$this->drawScatterGraph($stacked, true, $nonNumericXAxis);
 	}
+	/*
+	 * Kuchendiagramm
+	 */
+	function drawPieChart(){
+		$this->type = 'pieChart';
+		$this->drawBasics();
+		$this->graphFunctions->calcCenteredGraph();
+		$sumValue = 0;
+		foreach($this->graphData->datasets as $dataset){
+			foreach($dataset->values as $value){
+				$sumValue += $value;
+			}
+		}
+		$start = 0;
+		$cx = $this->graphFunctions->graph['x'];
+		$cy = $this->graphFunctions->graph['y'];
+		$radius = $this->graphFunctions->graph['radius']/2;
+		$startX = $cx+$radius;
+		$startY = $cy;
+		print_r($temp = $this->rotatePoint(array($cx, $cy), array($startX,$startY), 45));
+		foreach($this->graphData->datasets as $dataset){
+			$colors = ($dataset->colors != null)?$dataset->colors:$this->graphData->row_colors;
+			$i = 0;
+			foreach($dataset->values as $value){
+				//$end = round($start + ($value/$sumValue)*360);
+				$angle = ($value/$sumValue)*360;
+				$temp = $this->rotatePoint(array($cx, $cy), array($startX,$startY), $angle);
+				$endX = $temp[0];
+				$endY = $temp[1];
+				$color = $this->graphData->getColor($i);
+				//imagefilledarc ($this->img, $cx , $cy , $radius , $radius , $start , $end , $this->setColorHex($color), IMG_ARC_PIE);
+				$this->svg .= '<path d="M '.$cx.' '.$cy.' L '.$startX.' '.$startY.' A '.$radius.' '.$radius.' 0 '.($angle >= 180 ? 1 : 0).' 1 '.$endX.' '.$endY.'" fill="'.$color.'" ></path>';
+				//echo ($value/$sumValue).';start'.$start.';Ende'.$end.'|';
+				//$start = $end;
+				$startX = $endX;
+				$startY = $endY;
+				$i++;
+			}
+		}
+	}
+	/*
+	 *	Netzdiagramm
+	 */
+	function drawRadarChart($stacked = false){
+		$this->type = 'radarChart';
+		$this->drawBasics($stacked);
+		$this->graphFunctions->calcCenteredGraph();
+		$cx = $this->graphFunctions->graph['x'];
+		$cy = $this->graphFunctions->graph['y'];
+		$radius = $this->graphFunctions->graph['radius']/2;
+		$x = $cx+$radius;
+		$y = $cy;
+		$angle = (1/count($this->graphData->datasets))*360;
+		//drawing axes & grid:
+		$j = 0;
+		foreach($this->graphData->datasets as $dataset){
+			for($i = 1; $i < count($this->graphFunctions->yLabels); $i++){
+				$init = array($cx + ($i * $radius / (count($this->graphFunctions->yLabels)-1)), $cy);
+				$current = $this->rotatePoint(array($cx, $cy), $init, $angle * $j);
+				$next = $this->rotatePoint(array($cx, $cy), $init, $angle * ($j + 1));
+				$this -> svg .= '<line x1="'.$current[0].'" y1="'.$current[1].'" x2="'.$next[0].'" y2="'.$next[1].'" style="stroke:'.$this->graphData->config['gridColor'].'; stroke-width: 0.4; stroke-dasharray: 4,4;" />'; //drawing grid
+				if($j == 0){
+					$tickX = $cx + ($i * $radius / (count($this->graphFunctions->yLabels)-1));
+					$this->addTickMark($tickX, false, $cy);
+					$label = $this->graphFunctions->yLabels[$i];
+					$this->xLabel($tickX, $cy + $label['startY'], $label['display']);
+				}
+			}
+			
+			$this->svg .= '<line x1="'.$cx.'" y1="'.$cy.'" x2="'.$x.'" y2="'.$y.'" stroke-linecap="round" style="stroke: '.$this->config['axisColor'].'; stroke-width: '.$this->graphData->config['axisThickness'].'; " />'; // drawing axes
+			$temp = $this->rotatePoint(array($cx, $cy), array($x,$y), $angle);
+			$x = $temp[0];
+			$y = $temp[1];
+			$j++;
+		}
+		//drawing 0-Label:
+		$this->addTickMark($cx, false, $cy);
+		$label = $this->graphFunctions->yLabels[0];
+		$this->xLabel($cx, $cy + $label['startY'], $label['display']);
+		
+		$j = 0;
+		foreach($this->graphData->datasets as $dataset){
+			$i = 0;
+			foreach($dataset->values as $value){
+				$color = $this->graphData->getColor($i);
+				$sec_color = $this->graphData->getColor($i, true);
+				
+				//calculate scaling:
+				$labelsY = $this->graphData->getYLabels(2, $stacked);
+				$scaling = (((abs($labelsY[0]) + $labelsY[1]) == 0)?0:($radius)/(abs($labelsY[0]) + $labelsY[1]));
+				
+				if($j == 0){
+					$xmodPrev = $scaling * end($this->graphData->datasets)->values[$i];
+				}else{
+					$xmodPrev = $scaling * $this->graphData->datasets[$j-1]->values[$i];
+				}
+				$initPrev = array($cx + $xmodPrev, $cy);
+				if($j == 0){
+					$turnedPrev = $this->rotatePoint(array($cx, $cy), $initPrev, $angle * (count($this->graphData->datasets)-1));
+				}else{
+					$turnedPrev = $this->rotatePoint(array($cx, $cy), $initPrev, $angle * ($j-1));
+				}
+				
+				
+				$xmod = $scaling * $value;
+				$init = array($cx + $xmod, $cy);
+				$turned = $this->rotatePoint(array($cx, $cy), $init, $angle * $j);
+				
+				$this->svg .= '<line class="graphLine" x1="'.$turnedPrev[0].'" y1="'.$turnedPrev[1].'" x2="'.$turned[0].'" y2="'.$turned[1].'" stroke-linecap="round" style="stroke: '.$sec_color.'; stroke-width: '.$this->graphData->config['graphLineThickness'].'; " />';
+				
+				$this->svg .= '<circle xval="'.$dataset->x_name.'" yval="'.$value.'" cx="'.$turned[0].'" cy="'.$turned[1].'" r="'.($this->config['symbolSize'] / 2).'" fill="'.$color.'" />';
+				$i++;
+			}
+			$j++;
+		}
+	}
 	function drawBasics($stacked = false, $labelType = false, $swapAxes = false){
 		$this->calcGraph($stacked, $labelType, false, $swapAxes);
 		$this->writeTitle();	//Titel hinzufuegen
 	}
-	function calcWordDim($font, $size, $text, $angle = 0){
+	function calcWordDim($font, $size, $text, $angle = 0){                               
 		$font  = $this->font_dir.$font.'.ttf';
 		$dimensions = imagettfbbox($size, $angle, $font, $text);
 		return array('x'=>max(abs($dimensions[4] - $dimensions[0]),abs($dimensions[6] - $dimensions[2])),
 				'y'=>max(abs($dimensions[7] - $dimensions[3]),abs($dimensions[5] - $dimensions[1])),
 				'startY'=>abs($dimensions[7]-$dimensions[1]));
 	}
-	function addTickMark($pos, $Ymode = false){
+	function addTickMark($pos, $Ymode = false, $customVal = null){
 		$tickLength = 1.5;
 		if($Ymode){
-			$this->svg .= '<line x1="'.($this->graphFunctions->graph['x1'] - ($this->config['axisThickness'] * $tickLength)).'" y1="'.$pos.'" x2="'.($this->graphFunctions->graph['x1'] + ($this->config['axisThickness'] * $tickLength)).'" y2="'.$pos.'" style="stroke:'.$this->config['axisColor'].';stroke-width:'.$this->graphData->config['axisThickness'].'" />';
+			if($customVal != null){
+				$x = $customVal;
+			}else{
+				$x = $this->graphFunctions->graph['x1'];
+			}
+			$this->svg .= '<line x1="'.($x - ($this->config['axisThickness'] * $tickLength)).'" y1="'.$pos.'" x2="'.($x + ($this->config['axisThickness'] * $tickLength)).'" y2="'.$pos.'" style="stroke:'.$this->config['axisColor'].';stroke-width:'.$this->graphData->config['axisThickness'].'" />';
 		}else{
-			$this->svg .= '<line x1="'.$pos.'" y1="'.($this->graphFunctions->graph['y2'] - ($this->config['axisThickness'] * $tickLength)).'" x2="'.$pos.'" y2="'.($this->graphFunctions->graph['y2'] + ($this->config['axisThickness'] * $tickLength)).'" style="stroke:'.$this->config['axisColor'].';stroke-width:'.$this->graphData->config['axisThickness'].'" />';
+			if($customVal != null){
+				$y = $customVal;
+			}else{
+				$y = $this->graphFunctions->graph['y2'];
+			}
+			$this->svg .= '<line x1="'.$pos.'" y1="'.($y - ($this->config['axisThickness'] * $tickLength)).'" x2="'.$pos.'" y2="'.($y + ($this->config['axisThickness'] * $tickLength)).'" style="stroke:'.$this->config['axisColor'].';stroke-width:'.$this->graphData->config['axisThickness'].'" />';
 		}
 	}
 	function xLabels($stacked = false, $ySwapped = false, $nonNumeric = false){
@@ -461,5 +587,22 @@ class graphSVGImage{
 	}
 	function getSVG(){
 		return $this->svg.'</svg>';
+	}
+	private function rotatePoint($origin, $point, $angle){
+		$s = sin($angle * M_PI/180);
+		$c = cos($angle * M_PI/180);
+
+		// translate point back to origin:
+		$point[0] -= $origin[0];
+		$point[1] -= $origin[1];
+
+		// rotate point
+		$xnew = $point[0] * $c - $point[1] * $s;
+		$ynew = (double) ($point[0] * $s) + (double) ($point[1] * $c);
+
+		// translate point back:
+		$point[0] = (double) $xnew + (double) $origin[0];
+		$point[1] = (double) $ynew + (double) $origin[1];
+		return $point;
 	}
 }
