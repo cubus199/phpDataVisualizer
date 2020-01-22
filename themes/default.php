@@ -31,6 +31,8 @@
 		"yLabelCount" => 5,							// maximum number of labels at the y-axis
 		"symbolSize" => 10, 						// size of symbols e.g. scatter Graph
 		"xUnit" => '',								// Unit displayed besides the labels at the x-axis
-		"yUnit" => ''								// Unit displayed besides the labels at the y-axis
+		"yUnit" => '',								// Unit displayed besides the labels at the y-axis
+		"primaryColors" => array('#845EC2','#D65DB1','#FF6F91','#FF9671','#FFC75F','#F9F871'),
+		"secondaryColors" => array('#845EC2','#D65DB1','#FF6F91','#FF9671','#FFC75F','#F9F871')
 	);
 ?>

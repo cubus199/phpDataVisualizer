@@ -11,20 +11,24 @@ require_once 'graphSVGImage.php';
 $config=array(
 	"containerWidth" => 1280,
 	"containerHeight" => 720,
-	"leftPadding" => 0,
-	"rightPadding" => 0,
-	"topPadding" => 0,
-	"bottomPadding" => 0,
+	"leftPadding" => 10,
+	"rightPadding" => 10,
+	"topPadding" => 10,
+	"bottomPadding" => 10,
 	"colLabelRotation" => 90,
+	"graphTitleFontSize" => 36,
+	"symbolSize" => 14,
+	"graphLineThickness"=>4,
+	"generalFontSize" => "18",
 	"yUnit" => '°C',
 );
-$graphData = new graphData('Rendered Image | vert. Bar - Graph (stacked)','test', null, null, $config);
-$graphData->row_colors = array('#FFCC68','#999EFF','#FF6682');
-$graphData->sec_row_colors = array('#FFE2B5','#E5E7FF','#FFB2C0');
+$graphData = new graphData('Rendered Image | vert. Bar - Graph (stacked)','test', null, 'darkNature.php', $config);
+//$graphData->row_colors = array('#82F477','#96F7F2','#6196D7');
+//$graphData->sec_row_colors = array('#82F477','#96F7F2','#6196D7');
 $graphData->row_symbols = array('circle','triangle','square');
-$graphData->addDataset(new dataset(0, array(26,15,10),null));
-$graphData->addDataset(new dataset(-1, array(40,5,7),array('#C0D0E0','#999EFF','#FF6682')));
-$graphData->addDataset(new dataset(2, array(-10,6,10),null, array('circle','cross','square')));
+$graphData->addDataset(new dataset(0, array(26,15,10)));
+$graphData->addDataset(new dataset(-1, array(40,5,7)));
+$graphData->addDataset(new dataset(2, array(-10,6,10)));
 $graphData->addDataset(new dataset(3, array(50,8.2,40)));
 $graphData->addDataset(new dataset(12, array(80,6,15)));
 $graphData->addDataset(new dataset(5, array(5,36,33)));

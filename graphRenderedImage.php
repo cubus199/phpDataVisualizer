@@ -84,7 +84,8 @@ class graphRenderedImage{
 						$y1Temp = $y_1;
 						$y2Temp = $y_2;
 					}
-					imagefilledrectangle ($this->img, $x1, $y1Temp-1, $x2, $y2Temp-1, $this->setColorHex(($dataset->colors != null)?$dataset->colors[$j]:$this->graphData->row_colors[$j]));
+					$color = $this->graphData->getColor($j);
+					imagefilledrectangle ($this->img, $x1, $y1Temp-1, $x2, $y2Temp-1, $this->setColorHex($color));
 				}
 				$j++;
 			}			
@@ -153,7 +154,8 @@ class graphRenderedImage{
 						$x2Temp = $x_2;
 
 					}
-					imagefilledrectangle ($this->img, $x1Temp+1, $y1, $x2Temp+1, $y2, $this->setColorHex(($dataset->colors != null)?$dataset->colors[$j]:$this->graphData->row_colors[$j]));
+					$color = $this->graphData->getColor($j);
+					imagefilledrectangle ($this->img, $x1Temp+1, $y1, $x2Temp+1, $y2, $this->setColorHex($color));
 				}
 				$j++;
 			}
@@ -202,7 +204,7 @@ class graphRenderedImage{
 		imagesetthickness ($this->img, $this->graphData->config['graphLineThickness']);//Setzen der Liniendicke
 		for($i = 0; $i < count($datasets[0]->values); $i++){
 			$points = array();
-			$color = $this->setColorHex(($this->graphData->sec_row_colors != null)?$this->graphData->sec_row_colors[$i]:$this->graphData->row_colors[$i]);
+			$color = $this->setColorHex($this->graphData->getColor($i,true));
 			$j = 0;
 			foreach($datasets as $dataset){
 				array_push($points, ($nonNumericXAxis?$this->graphFunctions->graph['x1']:$this->graphFunctions->graph['x0']) + ($nonNumericXAxis?$this->graphFunctions->graph['scaleNonNumericLineX']:$this->graphFunctions->graph['scaleNumericX']) * ($nonNumericXAxis?$j:$dataset->x_name), $this->graphFunctions->graph['y0'] - $this->graphFunctions->graph['scaleNumericY'] * $dataset->values[$i]);
@@ -251,7 +253,7 @@ class graphRenderedImage{
 			$i = 0;
 			foreach($dataset->values as $value){
 				$y = $this->graphFunctions->graph['y0'] - $this->graphFunctions->graph['scaleNumericY'] * $value;
-				$color = $this->setColorHex(($dataset->colors != null)?$dataset->colors[$i]:$this->graphData->row_colors[$i]);
+				$color = $this->setColorHex($this->graphData->getColor($i));
 				$size = $this->graphData->config['symbolSize'];
 				switch($dataset->symbols != null?$dataset->symbols[$i]:$this->graphData->row_symbols[$i]){
 					case 'square':
@@ -316,7 +318,8 @@ class graphRenderedImage{
 			$i = 0;
 			foreach($dataset->values as $value){
 				$end = round($start + ($value/$sumValue)*360);
-				imagefilledarc ($this->img, $cx , $cy , $radius , $radius , $start , $end , $this->setColorHex($colors[$i]), IMG_ARC_PIE);
+				$color = $this->graphData->getColor($i);
+				imagefilledarc ($this->img, $cx , $cy , $radius , $radius , $start , $end , $this->setColorHex($color), IMG_ARC_PIE);
 				//echo ($value/$sumValue).';start'.$start.';Ende'.$end.'|';
 				$start = $end;
 				$i++;

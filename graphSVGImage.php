@@ -48,10 +48,6 @@ class graphSVGImage{
 		$datasets = $this->graphData->getDatasets();
 		$i = 0;
 		foreach($datasets as $dataset){
-			$colors = $this->graphData->row_colors;
-			if($dataset->colors != null){
-				$colors = $dataset->colors;
-			}
 			$x1 = $this->graphFunctions->graph['x1'] + $i * $this->graphFunctions->graph['scaleNonNumericX'] + 0.5*$this->graphData->config['graphComponentSpacing'];
 			$x2 = $this->graphFunctions->graph['x1'] + ($i+1) * $this->graphFunctions->graph['scaleNonNumericX'] - 0.5*$this->graphData->config['graphComponentSpacing'];
 			$y2 = $this->graphFunctions->graph['y0'];
@@ -90,11 +86,9 @@ class graphSVGImage{
 						}
 					}
 					if(($y1 - ($this->graphData->config['axisThickness'])*0.5) < $this->graphFunctions->graph['y2'] || !$first && !$stacked){
-						if(!isset($colors[$j])){
-							$colors[$j]='#000000';
-						}
+						$color = $this->graphData->getColor($j);
 						$yTemp = ($first || !$stacked)?$y1 - ($this->graphFunctions->graph['y2']):$y1;
-						$this->svg .= '<rect class="bar" x="'.$x1.'" y="'.($switch?$y_1:$y2).'" width="'.($x2 - $x1).'" height="'.($switch?($y_2 - $y_1):($y1 - $y2)).'" style="fill: '.$colors[$j].';" />';
+						$this->svg .= '<rect class="bar" x="'.$x1.'" y="'.($switch?$y_1:$y2).'" width="'.($x2 - $x1).'" height="'.($switch?($y_2 - $y_1):($y1 - $y2)).'" style="fill: '.$color.';" />';
 						$first = false;
 					}
 				}
@@ -122,10 +116,6 @@ class graphSVGImage{
 		$bar_width_scale = $this->graphFunctions->graph['scaleNumericFlippedX'];
 		$i = 0;
 		foreach($datasets as $dataset){
-			$colors = $this->graphData->row_colors;
-			if($dataset->colors != null){
-				$colors = $dataset->colors;
-			}
 			$x2 = $this->graphFunctions->graph['xFlipped0'];
 			$y1 = $this->graphFunctions->graph['y1'] + $i * ($this->graphFunctions->graph['scaleNonNumericY']) + 0.5*$this->graphData->config['graphComponentSpacing'];
 			$y2 = $this->graphFunctions->graph['y1'] + ($i+1) * ($this->graphFunctions->graph['scaleNonNumericY']) - 0.5*$this->graphData->config['graphComponentSpacing'];
@@ -169,7 +159,8 @@ class graphSVGImage{
 					}
 					if(($this->graphFunctions->graph['x1'] + $this->graphData->config['axisThickness']-1)*0.5 < $x2 || !$first && !$stacked){
 						$xTemp = ($first || !$stacked)?$x1 + ($this->graphData->config['axisThickness'])*0.5:$x1;
-						$this->svg .= '<rect class="bar" x="'.($switch?$x_2:$xTemp).'" y="'.$y1.'" width="'.($switch?($x_1-$x_2):($x2 - $xTemp)).'" height="'.($y2 - $y1).'" style="fill: '.$colors[$j].';" />';
+						$color = $this->graphData->getColor($j);
+						$this->svg .= '<rect class="bar" x="'.($switch?$x_2:$xTemp).'" y="'.$y1.'" width="'.($switch?($x_1-$x_2):($x2 - $xTemp)).'" height="'.($y2 - $y1).'" style="fill: '.$color.';" />';
 						$first = false;
 					}
 				}
@@ -202,11 +193,7 @@ class graphSVGImage{
 		$limits = $this->graphData->getLimits($stacked);
 		$j = 0;
 		foreach($datasets as $dataset){
-			$colors = $this->graphData->row_colors;
 			$symbols = $this->graphData->row_symbols;
-			if($dataset->colors != null){
-				$colors = $dataset->colors;
-			}
 			if($dataset->symbols != null){
 				$symbols = $dataset->symbols;
 			}
@@ -217,16 +204,14 @@ class graphSVGImage{
 				if(!isset($symbols[$i])){
 					$symbols[$i] = 'circle';
 				}
-				if(!isset($colors[$i])){
-					$colors[$i]='#000000';
-				}
+				$color = $this->graphData->getColor($i);
 				switch($symbols[$i]){
 					case 'square':
-						$this->svg .= '<rect class="scatterPoint" pointtype="square" xval="'.$dataset->x_name.'" yval="'.$value.'" x="'.($x - ($this->config['symbolSize'] / 2)).'" y="'.($y - ($this->config['symbolSize'] / 2)).'" width="'.$this->config['symbolSize'].'" height="'.$this->config['symbolSize'].'" fill="'.$colors[$i].'" />';
+						$this->svg .= '<rect class="scatterPoint" pointtype="square" xval="'.$dataset->x_name.'" yval="'.$value.'" x="'.($x - ($this->config['symbolSize'] / 2)).'" y="'.($y - ($this->config['symbolSize'] / 2)).'" width="'.$this->config['symbolSize'].'" height="'.$this->config['symbolSize'].'" fill="'.$color.'" />';
 						break;
 					case 'circle':
 					default:
-						$this->svg .= '<circle class="scatterPoint" pointtype="circle" xval="'.$dataset->x_name.'" yval="'.$value.'" cx="'.$x.'" cy="'.$y.'" r="'.($this->config['symbolSize'] / 2).'" fill="'.$colors[$i].'" />';
+						$this->svg .= '<circle class="scatterPoint" pointtype="circle" xval="'.$dataset->x_name.'" yval="'.$value.'" cx="'.$x.'" cy="'.$y.'" r="'.($this->config['symbolSize'] / 2).'" fill="'.$color.'" />';
 						break;
 					case 'cross':
 						$c = 0.25 * $this->config['symbolSize'];
@@ -246,10 +231,10 @@ class graphSVGImage{
 						$cross[9] = ($x - $b).','.$y;
 						$cross[10] = ($x - $d).','.($y - $a);
 						$cross[11] = ($x - $a).','.($y - $d);
-						$this->svg .= '<polygon class="scatterPoint" pointtype="cross" xval="'.$dataset->x_name.'" yval="'.$value.'" points="'.implode(' ', $cross).'" fill="'.$colors[$i].'" />';
+						$this->svg .= '<polygon class="scatterPoint" pointtype="cross" xval="'.$dataset->x_name.'" yval="'.$value.'" points="'.implode(' ', $cross).'" fill="'.$color.'" />';
 						break;
 					case 'triangle':
-						$this->svg .= '<polygon class="scatterPoint" pointtype="triangle" xval="'.$dataset->x_name.'" yval="'.$value.'" points="'.$x.','.($y -($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x +($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x -($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).'" fill="'.$colors[$i].'" />';
+						$this->svg .= '<polygon class="scatterPoint" pointtype="triangle" xval="'.$dataset->x_name.'" yval="'.$value.'" points="'.$x.','.($y -($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x +($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x -($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).'" fill="'.$color.'" />';
 						break;
 				}
 				$i++;
@@ -271,10 +256,6 @@ class graphSVGImage{
 		//$scaleX = ($this->graphFunctions->graph['x2'] - $this->graphFunctions->graph['x1'])/($nonNumericXAxis?count($datasets)-1:$this->graphData->getXLabels(2)[1]);
 		//$scaleY = ($this->graphFunctions->graph['y2'] - $this->graphFunctions->graph['y1'])/$this->graphData->getYLabels(2, $stacked)[1];
 		
-		$colors = $this->graphData->sec_row_colors;
-		if($colors == null){
-			$colors = $this->graphData->row_colors;
-		}
 		$linePoints = array();
 		for($i = 0; $i < count($datasets) - 1; $i++){
 			for($j = 0; $j < count($datasets[$i]->values); $j++){
@@ -284,11 +265,9 @@ class graphSVGImage{
 				$y2 = $this->graphFunctions->graph['y0'] - $this->graphFunctions->graph['scaleNumericY'] * $datasets[$i + 1]->values[$j];
 				//$x2 = $this->graphFunctions->graph['x1'] + $scaleX * ($nonNumericXAxis?$i+1:$datasets[$i + 1]->x_name);
 				//$y2 = $this->graphFunctions->graph['y2'] - $scaleY * $datasets[$i + 1]->values[$j];
-				if(!isset($colors[$j])){
-					$colors[$j] = '#000000';
-				}
+				$color = $this->graphData->getColor($j,true);
 				if($connection == 0){
-					$this->svg .= '<line class="graphLine" x1="'.$x1.'" y1="'.$y1.'" x2="'.$x2.'" y2="'.$y2.'" stroke-linecap="round" style="stroke: '.$colors[$j].'; stroke-width: '.$this->graphData->config['graphLineThickness'].'; " />';
+					$this->svg .= '<line class="graphLine" x1="'.$x1.'" y1="'.$y1.'" x2="'.$x2.'" y2="'.$y2.'" stroke-linecap="round" style="stroke: '.$color.'; stroke-width: '.$this->graphData->config['graphLineThickness'].'; " />';
 				}else{
 					$linePoints[$j] []= array($x1, $y1);
 					if($i == count($datasets) - 2){
@@ -313,8 +292,8 @@ class graphSVGImage{
 				$spline = new cubicSplineInterpolation($line, $connection == 2);
 				$spline->interpolate();
 				$lineOut = $spline->getLine($this->pointCount);
-				
-				$this->svg .= '<polyline class="graphCubicLine" points="'.implode(' ', array_map(function ($element){return implode(',', $element);}, $lineOut)).'" stroke-linecap="round" style="fill: transparent; stroke: '.$colors[$j].'; stroke-width: '.$this->graphData->config['graphLineThickness'].'; " />';
+				$color = $this->graphData->getColor($j, true);
+				$this->svg .= '<polyline class="graphCubicLine" points="'.implode(' ', array_map(function ($element){return implode(',', $element);}, $lineOut)).'" stroke-linecap="round" style="fill: transparent; stroke: '.$color.'; stroke-width: '.$this->graphData->config['graphLineThickness'].'; " />';
 				$j++;
 			}
 		}

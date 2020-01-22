@@ -339,5 +339,14 @@ class graphData{
 		}
 		return $shift;
 	}
+	
+	function getColor($id, $secondary = false){
+		if(isset($this->row_colors[$id]) && !$secondary || isset($this->sec_row_colors[$id]) && $secondary){
+			if(!$secondary) return $this->row_colors[$id];
+			return $this->sec_row_colors[$id];
+		}
+		if(!$secondary) return $this->config['primaryColors'][$id % count($this->config['primaryColors'])];
+		return $this->config['secondaryColors'][$id % count($this->config['secondaryColors'])];
+	}
 }
 ?>
