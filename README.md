@@ -1,5 +1,5 @@
 # phpDataVisualizer
-phpDataVisualizer is a simple grahing library, which is desinged to create compehensive visualization of data.
+phpDataVisualizer is a simple grahing library, which is desinged to create comprehensive visualizations of data.
 
 currently supported graph-types:
 	• barchart (vertical & horizontal; stacked & besides each other)
