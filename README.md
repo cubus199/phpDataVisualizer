@@ -1,4 +1,4 @@
-# phpDataVisualzier
+# phpDataVisualizer
 phpDataVisualizer is a simple grahing library, which is desinged to create compehensive visualization of data.
 
 currently supported graph-types:
