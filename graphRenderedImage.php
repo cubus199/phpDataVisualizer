@@ -72,8 +72,8 @@ class graphRenderedImage{
 							$y_2 = $y_1 - $value * $this->graphFunctions->graph['scaleNumericY'];
 						}
 					}else{			//Die Ergebnisse nebeneinander zeichnen
-						$x1 = $x + ($j * $width) + $this->graphData->config['graphSupComponentSpacing']*0.5 + ($first?0:1);
-						$x2 = $x + (($j+1) * $width) - $this->graphData->config['graphSupComponentSpacing']*0.5;
+						$x1 = $x + ($j * $width) + $this->graphData->config['graphSubComponentSpacing']*0.5 + ($first?0:1);
+						$x2 = $x + (($j+1) * $width) - $this->graphData->config['graphSubComponentSpacing']*0.5;
 						$y2 = $y - $value * $this->graphFunctions->graph['scaleNumericY'];
 						$first = false;
 					}
@@ -138,8 +138,8 @@ class graphRenderedImage{
 							$x_2 = $x_1 + $value * $this->graphFunctions->graph['scaleNumericFlippedX'];
 						}
 					}else{
-						$y1 = $y + ($j * $width) + $this->graphData->config['graphSupComponentSpacing']*0.5 + ($first?0:1);
-						$y2 = $y + (($j + 1) * $width) - $this->graphData->config['graphSupComponentSpacing']*0.5;
+						$y1 = $y + ($j * $width) + $this->graphData->config['graphSubComponentSpacing']*0.5 + ($first?0:1);
+						$y2 = $y + (($j + 1) * $width) - $this->graphData->config['graphSubComponentSpacing']*0.5;
 						if($i == (count($datasets) - 1) && $j == (count($dataset->values)-1)){
 							$y2 -= ($this->graphData->config['axisThickness']-1);
 						}
@@ -308,29 +308,29 @@ class graphRenderedImage{
 
 				$lineHeight = max($maxHeight, $this->graphData->config['symbolSize'] * 1.6);
 
-				$legendWidth = $maxWidth + $this->graphData->config['symbolSize'] + 2 * $this->graphData->config['graphSupComponentSpacing'];
-				$legendHeight =  $lineHeight * count($row_names) + 2 * $this->graphData->config['graphSupComponentSpacing'];
+				$legendWidth = $maxWidth + $this->graphData->config['symbolSize'] + 2 * $this->graphData->config['graphSubComponentSpacing'];
+				$legendHeight =  $lineHeight * count($row_names) + 2 * $this->graphData->config['graphSubComponentSpacing'];
 				
 				switch($this->graphData->config['legendPosition']){
 					case 'topLeft':
-						$x = $this->graphFunctions->graph['x1'] + $this->graphData->config['graphSupComponentSpacing'];
-						$y = $this->graphFunctions->graph['y1'] + $this->graphData->config['graphSupComponentSpacing'];
+						$x = $this->graphFunctions->graph['x1'] + $this->graphData->config['graphSubComponentSpacing'];
+						$y = $this->graphFunctions->graph['y1'] + $this->graphData->config['graphSubComponentSpacing'];
 						break;
 
 					default:
 					case 'topRight':
-						$x = $this->graphFunctions->graph['x2'] - ($legendWidth + $this->graphData->config['graphSupComponentSpacing']);
-						$y = $this->graphFunctions->graph['y1'] + $this->graphData->config['graphSupComponentSpacing'];
+						$x = $this->graphFunctions->graph['x2'] - ($legendWidth + $this->graphData->config['graphSubComponentSpacing']);
+						$y = $this->graphFunctions->graph['y1'] + $this->graphData->config['graphSubComponentSpacing'];
 						break;
 
 					case 'bottomLeft':
-						$x = $this->graphFunctions->graph['x1'] + $this->graphData->config['graphSupComponentSpacing'];
-						$y = $this->graphFunctions->graph['y2'] - ($legendHeight + $this->graphData->config['graphSupComponentSpacing']);
+						$x = $this->graphFunctions->graph['x1'] + $this->graphData->config['graphSubComponentSpacing'];
+						$y = $this->graphFunctions->graph['y2'] - ($legendHeight + $this->graphData->config['graphSubComponentSpacing']);
 						break;
 
 					case 'bottomRight':
-						$x = $this->graphFunctions->graph['x2'] - ($legendWidth + $this->graphData->config['graphSupComponentSpacing']);
-						$y = $this->graphFunctions->graph['y2'] - ($legendHeight + $this->graphData->config['graphSupComponentSpacing']);
+						$x = $this->graphFunctions->graph['x2'] - ($legendWidth + $this->graphData->config['graphSubComponentSpacing']);
+						$y = $this->graphFunctions->graph['y2'] - ($legendHeight + $this->graphData->config['graphSubComponentSpacing']);
 						break;
 				}
 
@@ -339,8 +339,8 @@ class graphRenderedImage{
 				imagerectangle($this->img, $x, $y, $x+$legendWidth, $y+$legendHeight, $this->setColorHex($this->graphData->config['legendBorderColor']));		
 				
 				$size = $this->graphData->config['symbolSize'];
-				$lineStart = $x +  $this->graphData->config['graphSupComponentSpacing'];
-				$currentLine = $y + $this->graphData->config['graphSupComponentSpacing'];
+				$lineStart = $x +  $this->graphData->config['graphSubComponentSpacing'];
+				$currentLine = $y + $this->graphData->config['graphSubComponentSpacing'];
 				for($i = 0; $i < count($row_names); $i++){
 					$currentLine += $lineHeight;
 					$color = $this->setColorHex($this->graphData->getColor($i));

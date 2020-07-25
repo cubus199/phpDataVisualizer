@@ -76,8 +76,8 @@ class graphSVGImage{
 							$y_2 = $y_1 - $value * $this->graphFunctions->graph['scaleNumericY'];
 						}
 					}else{			//Die Ergebnisse nebeneinander zeichnen
-						$x1 = $x + ($j * $width) + $this->graphData->config['graphSupComponentSpacing']*0.5;
-						$x2 = $x + (($j+1) * $width) - $this->graphData->config['graphSupComponentSpacing']*0.5;
+						$x1 = $x + ($j * $width) + $this->graphData->config['graphSubComponentSpacing']*0.5;
+						$x2 = $x + (($j+1) * $width) - $this->graphData->config['graphSubComponentSpacing']*0.5;
 						$y2 = $y - $value * $this->graphFunctions->graph['scaleNumericY'];
 						if($value < 0){
 							$switch = true;
@@ -148,8 +148,8 @@ class graphSVGImage{
 							$switch = true;
 						}
 					}else{
-						$y1 = $y + ($j * $width) + $this->graphData->config['graphSupComponentSpacing']*0.5;
-						$y2 = $y + (($j + 1) * $width) - $this->graphData->config['graphSupComponentSpacing']*0.5;
+						$y1 = $y + ($j * $width) + $this->graphData->config['graphSubComponentSpacing']*0.5;
+						$y2 = $y + (($j + 1) * $width) - $this->graphData->config['graphSubComponentSpacing']*0.5;
 						$x2 = $x + $value * $bar_width_scale;
 						if($value < 0){
 							$x_1 = $x1;
@@ -445,29 +445,29 @@ class graphSVGImage{
 
 				$lineHeight = max($maxHeight, $this->config['symbolSize'] * 1.6);
 
-				$legendWidth = $maxWidth + $this->config['symbolSize'] + 2 * $this->config['graphSupComponentSpacing'];
-				$legendHeight =  $lineHeight * count($row_names) + 2 * $this->config['graphSupComponentSpacing'];
+				$legendWidth = $maxWidth + $this->config['symbolSize'] + 2 * $this->config['graphSubComponentSpacing'];
+				$legendHeight =  $lineHeight * count($row_names) + 2 * $this->config['graphSubComponentSpacing'];
 
 				switch($this->config['legendPosition']){
 					case 'topLeft':
-						$x = $this->graphFunctions->graph['x1'] + $this->config['graphSupComponentSpacing'];
-						$y = $this->graphFunctions->graph['y1'] + $this->config['graphSupComponentSpacing'];
+						$x = $this->graphFunctions->graph['x1'] + $this->config['graphSubComponentSpacing'];
+						$y = $this->graphFunctions->graph['y1'] + $this->config['graphSubComponentSpacing'];
 						break;
 
 					default:
 					case 'topRight':
-						$x = $this->graphFunctions->graph['x2'] - ($legendWidth + $this->config['graphSupComponentSpacing']);
-						$y = $this->graphFunctions->graph['y1'] + $this->config['graphSupComponentSpacing'];
+						$x = $this->graphFunctions->graph['x2'] - ($legendWidth + $this->config['graphSubComponentSpacing']);
+						$y = $this->graphFunctions->graph['y1'] + $this->config['graphSubComponentSpacing'];
 						break;
 
 					case 'bottomLeft':
-						$x = $this->graphFunctions->graph['x1'] + $this->config['graphSupComponentSpacing'];
-						$y = $this->graphFunctions->graph['y2'] - ($legendHeight + $this->config['graphSupComponentSpacing']);
+						$x = $this->graphFunctions->graph['x1'] + $this->config['graphSubComponentSpacing'];
+						$y = $this->graphFunctions->graph['y2'] - ($legendHeight + $this->config['graphSubComponentSpacing']);
 						break;
 
 					case 'bottomRight':
-						$x = $this->graphFunctions->graph['x2'] - ($legendWidth + $this->config['graphSupComponentSpacing']);
-						$y = $this->graphFunctions->graph['y2'] - ($legendHeight + $this->config['graphSupComponentSpacing']);
+						$x = $this->graphFunctions->graph['x2'] - ($legendWidth + $this->config['graphSubComponentSpacing']);
+						$y = $this->graphFunctions->graph['y2'] - ($legendHeight + $this->config['graphSubComponentSpacing']);
 						break;
 				}
 
@@ -475,8 +475,8 @@ class graphSVGImage{
 
 				$legend .= '<rect x="'.$x.'" y="'.$y.'" width="'.$legendWidth.'" height="'.$legendHeight.'" style="stroke: '.$this->config['legendBorderColor'].'; fill: '.$this->config['containerBackgroundColor'].'; fill-opacity:'.$this->config['legendOpacity'].';" />';
 
-				$lineStart = $x +  $this->config['graphSupComponentSpacing'];
-				$currentLine = $y + $this->config['graphSupComponentSpacing'];
+				$lineStart = $x +  $this->config['graphSubComponentSpacing'];
+				$currentLine = $y + $this->config['graphSubComponentSpacing'];
 				for($i = 0; $i < count($row_names); $i++){
 					$currentLine += $lineHeight;
 					$color = $this->graphData->getColor($i);

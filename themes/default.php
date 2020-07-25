@@ -16,7 +16,7 @@
 		"bottomPadding" => 20,
 		"colLabelRotation" => 90,					// rotation of the column labels
 		"graphComponentSpacing"=>30,				// spacing between graphing-elements like bars of a bar-graph
-		"graphSupComponentSpacing"=>15,				// spacing of sub-components of graphing-elements
+		"graphSubComponentSpacing"=>10,				// spacing of sub-components of graphing-elements
 
 		// legend
 		"showLegend" => false,						// displaying the graphs legend
