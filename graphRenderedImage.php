@@ -255,43 +255,9 @@ class graphRenderedImage{
 				$y = $this->graphFunctions->graph['y0'] - $this->graphFunctions->graph['scaleNumericY'] * $value;
 				$color = $this->setColorHex($this->graphData->getColor($i));
 				$size = $this->graphData->config['symbolSize'];
-				switch($dataset->symbols != null?$dataset->symbols[$i]:$this->graphData->row_symbols[$i]){
-					case 'square':
-						imagefilledrectangle ($this->img, $x - $size*0.5, $y - $size*0.5, $x + $size*0.5, $y + $size*0.5, $color);
-						break;
-					case 'cross':
-						$c = 0.25 * $size;
-						$b = $c * sqrt(0.5);
-						$d = $size / 2;
-						$a = $d - $b;
-						$cross = array(
-							$x,($y - $b),
-							($x + $a),($y - $d),
-							($x + $d),($y - $a),
-							($x + $b),$y,
-							($x + $d),($y + $a),
-							($x + $a),($y + $d),
-							$x,($y + $b),
-							($x - $a),($y + $d),
-							($x - $d),($y + $a),
-							($x - $b),$y,
-							($x - $d),($y - $a),
-							($x - $a),($y - $d)
-						);	
 
-						imagefilledpolygon($this->img,$cross,count($cross)/2,$color);
-						break;
-					case 'triangle':
-						$points = array($x, $y -($this->graphData->config['symbolSize'] /4 * sqrt(3)),
-										$x -($this->graphData->config['symbolSize'] / 2), $y + ($this->graphData->config['symbolSize'] / 4 * sqrt(3)),
-										$x +($this->graphData->config['symbolSize'] / 2), $y + ($this->graphData->config['symbolSize'] / 4 * sqrt(3))
-										);
-						imagefilledpolygon($this->img,$points,count($points)/2, $color);
-						break;
-					case 'circle':
-					default:
-						imagefilledellipse ($this->img, $x , $y , $this->graphData->config['symbolSize'], $this->graphData->config['symbolSize'], $color);
-				}
+				$this->drawSymbol($dataset->symbols != null?$dataset->symbols[$i]:$this->graphData->row_symbols[$i], $x, $y, $color);
+
 				$i++;
 			}
 			$j++;
@@ -380,44 +346,8 @@ class graphRenderedImage{
 					$color = $this->setColorHex($this->graphData->getColor($i));
 					$x = $lineStart + ($this->graphData->config['symbolSize']/2);
 					$y = $currentLine - ($lineHeight/2);
-					switch($this->graphData->row_symbols[$i]){
-						case 'square':
-							imagefilledrectangle ($this->img, $x - $size*0.5, $y - $size*0.5, $x + $size*0.5, $y + $size*0.5, $color);
-							break;
-						case 'circle':
-						default:
-							imagefilledellipse ($this->img, $x , $y , $this->graphData->config['symbolSize'], $this->graphData->config['symbolSize'], $color);
-							break;
-						case 'cross':
-							$c = 0.25 * $size;
-							$b = $c * sqrt(0.5);
-							$d = $size / 2;
-							$a = $d - $b;
-							$cross = array(
-								$x,($y - $b),
-								($x + $a),($y - $d),
-								($x + $d),($y - $a),
-								($x + $b),$y,
-								($x + $d),($y + $a),
-								($x + $a),($y + $d),
-								$x,($y + $b),
-								($x - $a),($y + $d),
-								($x - $d),($y + $a),
-								($x - $b),$y,
-								($x - $d),($y - $a),
-								($x - $a),($y - $d)
-							);	
-	
-							imagefilledpolygon($this->img,$cross,count($cross)/2,$color);
-							break;
-						case 'triangle':
-							$points = array($x, $y -($this->graphData->config['symbolSize'] /4 * sqrt(3)),
-										$x -($this->graphData->config['symbolSize'] / 2), $y + ($this->graphData->config['symbolSize'] / 4 * sqrt(3)),
-										$x +($this->graphData->config['symbolSize'] / 2), $y + ($this->graphData->config['symbolSize'] / 4 * sqrt(3))
-										);
-							imagefilledpolygon($this->img,$points,count($points)/2, $color);
-							break;
-					}
+
+					$this->drawSymbol($this->graphData->row_symbols[$i], $x, $y, $color);
 
 					imagettftext($this->img, $this->graphData->config['generalFontSize'], 0, $lineStart  + $this->graphData->config['symbolSize'], $currentLine - $lineHeight / 2 + $maxHeight * 0.25, $this->setColorHex($this->graphData->config['generalFontColor']), $this->font_dir.$this->graphData->config['generalFont'].'.ttf', ' '.$row_names[$i]);
 				}
@@ -568,6 +498,48 @@ class graphRenderedImage{
 		$y = $this->graphData->config['topPadding'] + $this->calcWordDim($font, $this->graphData->config['graphTitleFontSize'], $this->graphData->title)['y'];
 		imagettftext($this->img, $this->graphData->config['graphTitleFontSize'], 0, $x, $y, $this->setColorHex($this->graphData->config['graphTitleColor']), $this->font_dir.$this->graphData->config['generalFont'].'.ttf', $this->graphData->title);
 	}
+
+	function drawSymbol($name, $x, $y, $color){
+		switch($name){
+			case 'square':
+				imagefilledrectangle ($this->img, $x - $this->graphData->config['symbolSize']*0.5, $y - $this->graphData->config['symbolSize']*0.5, $x + $this->graphData->config['symbolSize']*0.5, $y + $this->graphData->config['symbolSize']*0.5, $color);
+				break;
+			case 'circle':
+			default:
+				imagefilledellipse ($this->img, $x , $y , $this->graphData->config['symbolSize'], $this->graphData->config['symbolSize'], $color);
+				break;
+			case 'cross':
+				$c = 0.25 * $this->graphData->config['symbolSize'];
+				$b = $c * sqrt(0.5);
+				$d = $this->graphData->config['symbolSize'] / 2;
+				$a = $d - $b;
+				$cross = array(
+					$x,($y - $b),
+					($x + $a),($y - $d),
+					($x + $d),($y - $a),
+					($x + $b),$y,
+					($x + $d),($y + $a),
+					($x + $a),($y + $d),
+					$x,($y + $b),
+					($x - $a),($y + $d),
+					($x - $d),($y + $a),
+					($x - $b),$y,
+					($x - $d),($y - $a),
+					($x - $a),($y - $d)
+				);	
+
+				imagefilledpolygon($this->img,$cross,count($cross)/2,$color);
+				break;
+			case 'triangle':
+				$points = array($x, $y -($this->graphData->config['symbolSize'] /4 * sqrt(3)),
+							$x -($this->graphData->config['symbolSize'] / 2), $y + ($this->graphData->config['symbolSize'] / 4 * sqrt(3)),
+							$x +($this->graphData->config['symbolSize'] / 2), $y + ($this->graphData->config['symbolSize'] / 4 * sqrt(3))
+							);
+				imagefilledpolygon($this->img,$points,count($points)/2, $color);
+				break;
+		}
+	}
+
 	/*
 	 * Farben erstellen
 	 */
