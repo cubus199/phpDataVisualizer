@@ -205,38 +205,8 @@ class graphSVGImage{
 					$symbols[$i] = 'circle';
 				}
 				$color = $this->graphData->getColor($i);
-				switch($symbols[$i]){
-					case 'square':
-						$this->svg .= '<rect class="scatterPoint" pointtype="square" xval="'.$dataset->x_name.'" yval="'.$value.'" x="'.($x - ($this->config['symbolSize'] / 2)).'" y="'.($y - ($this->config['symbolSize'] / 2)).'" width="'.$this->config['symbolSize'].'" height="'.$this->config['symbolSize'].'" fill="'.$color.'" />';
-						break;
-					case 'circle':
-					default:
-						$this->svg .= '<circle class="scatterPoint" pointtype="circle" xval="'.$dataset->x_name.'" yval="'.$value.'" cx="'.$x.'" cy="'.$y.'" r="'.($this->config['symbolSize'] / 2).'" fill="'.$color.'" />';
-						break;
-					case 'cross':
-						$c = 0.25 * $this->config['symbolSize'];
-						$b = $c * sqrt(0.5);
-						$d = $this->config['symbolSize'] / 2;
-						$a = $d - $b;
-						$cross = array();	
-						$cross[0] = $x.','.($y - $b);
-						$cross[1] = ($x + $a).','.($y - $d);
-						$cross[2] = ($x + $d).','.($y - $a);
-						$cross[3] = ($x + $b).','.$y;
-						$cross[4] = ($x + $d).','.($y + $a);
-						$cross[5] = ($x + $a).','.($y + $d);
-						$cross[6] = $x.','.($y + $b);
-						$cross[7] = ($x - $a).','.($y + $d);
-						$cross[8] = ($x - $d).','.($y + $a);
-						$cross[9] = ($x - $b).','.$y;
-						$cross[10] = ($x - $d).','.($y - $a);
-						$cross[11] = ($x - $a).','.($y - $d);
-						$this->svg .= '<polygon class="scatterPoint" pointtype="cross" xval="'.$dataset->x_name.'" yval="'.$value.'" points="'.implode(' ', $cross).'" fill="'.$color.'" />';
-						break;
-					case 'triangle':
-						$this->svg .= '<polygon class="scatterPoint" pointtype="triangle" xval="'.$dataset->x_name.'" yval="'.$value.'" points="'.$x.','.($y -($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x +($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x -($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).'" fill="'.$color.'" />';
-						break;
-				}
+				$this->svg .= $this->getSymbol($symbols[$i], $x, $y, $color, $dataset->x_name, $value);
+
 				$i++;
 			}
 			$j++;
@@ -414,6 +384,46 @@ class graphSVGImage{
 		}
 	}
 
+	function getSymbol($name, $x, $y, $color, $xval = null, $yval = null){
+		$args = '';
+		if($xval != null){
+			$args = 'class="scatterPoint" xval="'.$xval.'" yval="'.$yval.'"';
+		}
+		switch($name){
+			case 'square':
+				
+				return '<rect  pointtype="square" '.$args.' x="'.($x - ($this->config['symbolSize'] / 2)).'" y="'.($y - ($this->config['symbolSize'] / 2)).'" width="'.$this->config['symbolSize'].'" height="'.$this->config['symbolSize'].'" fill="'.$color.'" />';
+				break;
+			case 'circle':
+			default:
+				return '<circle pointtype="circle" '.$args.' cx="'.$x.'" cy="'.$y.'" r="'.($this->config['symbolSize'] / 2).'" fill="'.$color.'" />';
+				break;
+			case 'cross':
+				$c = 0.25 * $this->config['symbolSize'];
+				$b = $c * sqrt(0.5);
+				$d = $this->config['symbolSize'] / 2;
+				$a = $d - $b;
+				$cross = array();	
+				$cross[0] = $x.','.($y - $b);
+				$cross[1] = ($x + $a).','.($y - $d);
+				$cross[2] = ($x + $d).','.($y - $a);
+				$cross[3] = ($x + $b).','.$y;
+				$cross[4] = ($x + $d).','.($y + $a);
+				$cross[5] = ($x + $a).','.($y + $d);
+				$cross[6] = $x.','.($y + $b);
+				$cross[7] = ($x - $a).','.($y + $d);
+				$cross[8] = ($x - $d).','.($y + $a);
+				$cross[9] = ($x - $b).','.$y;
+				$cross[10] = ($x - $d).','.($y - $a);
+				$cross[11] = ($x - $a).','.($y - $d);
+				return '<polygon pointtype="cross" '.$args.' points="'.implode(' ', $cross).'" fill="'.$color.'" />';
+				break;
+			case 'triangle':
+				 return'<polygon pointtype="triangle" '.$args.' points="'.$x.','.($y -($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x +($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x -($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).'" fill="'.$color.'" />';
+				break;
+		}
+	}
+
 	function drawLegend(){
 
 		$row_names = $this->graphData->row_names;
@@ -469,38 +479,8 @@ class graphSVGImage{
 					$color = $this->graphData->getColor($i);
 					$x = $lineStart + ($this->config['symbolSize']/2);
 					$y = $currentLine - ($lineHeight/2);
-					switch($this->graphData->row_symbols[$i]){
-						case 'square':
-							$legend .= '<rect pointtype="square" x="'.($x - ($this->config['symbolSize'] / 2)).'" y="'.($y - ($this->config['symbolSize'] / 2)).'" width="'.$this->config['symbolSize'].'" height="'.$this->config['symbolSize'].'" fill="'.$color.'" />';
-							break;
-						case 'circle':
-						default:
-							$legend .= '<circle pointtype="circle" cx="'.$x.'" cy="'.$y.'" r="'.($this->config['symbolSize'] / 2).'" fill="'.$color.'" />';
-							break;
-						case 'cross':
-							$c = 0.25 * $this->config['symbolSize'];
-							$b = $c * sqrt(0.5);
-							$d = $this->config['symbolSize'] / 2;
-							$a = $d - $b;
-							$cross = array();	
-							$cross[0] = $x.','.($y - $b);
-							$cross[1] = ($x + $a).','.($y - $d);
-							$cross[2] = ($x + $d).','.($y - $a);
-							$cross[3] = ($x + $b).','.$y;
-							$cross[4] = ($x + $d).','.($y + $a);
-							$cross[5] = ($x + $a).','.($y + $d);
-							$cross[6] = $x.','.($y + $b);
-							$cross[7] = ($x - $a).','.($y + $d);
-							$cross[8] = ($x - $d).','.($y + $a);
-							$cross[9] = ($x - $b).','.$y;
-							$cross[10] = ($x - $d).','.($y - $a);
-							$cross[11] = ($x - $a).','.($y - $d);
-							$legend .= '<polygon pointtype="cross" points="'.implode(' ', $cross).'" fill="'.$color.'" />';
-							break;
-						case 'triangle':
-							$legend .= '<polygon pointtype="triangle" points="'.$x.','.($y -($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x +($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x -($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).'" fill="'.$color.'" />';
-							break;
-					}
+
+					$legend .= $this->getSymbol($this->graphData->row_symbols[$i], $x, $y, $color);
 
 					$legend .= '<text x="'.($lineStart  + $this->config['symbolSize']).'" y="'.($currentLine - $lineHeight / 2 + $maxHeight * 0.25).'" style="fill: '.$this->config['generalFontColor'].'; font-family: '.$this->config['generalFont'].'; font-size: '.$this->config['generalFontSize'].'pt;">&nbsp;'.$row_names[$i].'</text>';
 				}
