@@ -460,10 +460,10 @@ class graphRenderedImage{
 				$x = $this->graphData->config['leftPadding']; 
 				break;
 			case 'center':	//Titel zentriert schreiben
-				$x = $this->graphData->config['leftPadding']+(($this->graphData->config["containerWidth"] - $this->graphData->config['leftPadding'] - $this->graphData->config['rightPadding'] - $this->calcWordDim('calibri', $this->graphData->config['graphTitleFontSize'], $this->graphData->title)['x']) / 2); //zentrieren des Titels
+				$x = $this->graphData->config['leftPadding']+(($this->graphData->config["containerWidth"] - $this->graphData->config['leftPadding'] - $this->graphData->config['rightPadding'] - $this->calcWordDim($this->graphData->config['generalFont'], $this->graphData->config['graphTitleFontSize'], $this->graphData->title)['x']) / 2); //zentrieren des Titels
 				break;
 			case 'right':	//Titel rechtsbuendig schreiben
-				$x = $this->graphData->config["containerWidth"] - $this->graphData->config['rightPadding'] - $this->calcWordDim('calibri', $this->graphData->config['graphTitleFontSize'], $this->graphData->title)['x'];
+				$x = $this->graphData->config["containerWidth"] - $this->graphData->config['rightPadding'] - $this->calcWordDim($this->graphData->config['generalFont'], $this->graphData->config['graphTitleFontSize'], $this->graphData->title)['x'];
 				break;
 		}
 		$y = $this->graphData->config['topPadding'] + $this->calcWordDim($font, $this->graphData->config['graphTitleFontSize'], $this->graphData->title)['y'];
