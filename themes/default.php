@@ -20,8 +20,9 @@
 
 		// legend
 		"showLegend" => false,						// displaying the graphs legend
-		"legendPosition" => "bottomRight",			// position, where the Legend should be placed
-		"legendOpacity" => 1,						// opacity of the legend's background
+		"legendPosition" => "topRight",				// position, where the Legend should be placed
+		"legendOpacity" => 0.7,						// opacity of the legend's background
+		'legendBorderColor' => '#dbdbdb',			// color of the legend's boder
 
 		// axes
 		"xAxisLabel" => "",							// label of the x-axis

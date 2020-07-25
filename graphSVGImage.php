@@ -414,10 +414,109 @@ class graphSVGImage{
 			$j++;
 		}
 	}
+
+	function drawLegend(){
+
+		$row_names = $this->graphData->row_names;
+		$font = $this->graphData->config['generalFont'];
+		if($row_names != null){
+			if(count($row_names) == count($this->graphData->datasets[0]->values)){
+				$legend = '<g id="legend">';
+
+				$maxWidth = 0;
+				$maxHeight = 0;
+				foreach($row_names as $name){
+					$dims = $this->calcWordDim($font, $this->config['generalFontSize'], ' '.$name);
+					if($dims['x'] > $maxWidth) $maxWidth = $dims['x'];
+					if($dims['y']*1.6 > $maxHeight) $maxHeight = $dims['y'] *1.6;
+				}
+
+				$lineHeight = max($maxHeight, $this->config['symbolSize'] * 1.6);
+
+				$legendWidth = $maxWidth + $this->config['symbolSize'] + 2 * $this->config['graphSupComponentSpacing'];
+				$legendHeight =  $lineHeight * count($row_names) + 2 * $this->config['graphSupComponentSpacing'];
+
+				switch($this->config['legendPosition']){
+					case 'topLeft':
+						$x = $this->graphFunctions->graph['x1'] + $this->config['graphSupComponentSpacing'];
+						$y = $this->graphFunctions->graph['y1'] + $this->config['graphSupComponentSpacing'];
+						break;
+
+					default:
+					case 'topRight':
+						$x = $this->graphFunctions->graph['x2'] - ($legendWidth + $this->config['graphSupComponentSpacing']);
+						$y = $this->graphFunctions->graph['y1'] + $this->config['graphSupComponentSpacing'];
+						break;
+
+					case 'bottomLeft':
+						$x = $this->graphFunctions->graph['x1'] + $this->config['graphSupComponentSpacing'];
+						$y = $this->graphFunctions->graph['y2'] - ($legendHeight + $this->config['graphSupComponentSpacing']);
+						break;
+
+					case 'bottomRight':
+						$x = $this->graphFunctions->graph['x2'] - ($legendWidth + $this->config['graphSupComponentSpacing']);
+						$y = $this->graphFunctions->graph['y2'] - ($legendHeight + $this->config['graphSupComponentSpacing']);
+						break;
+				}
+
+				
+
+				$legend .= '<rect x="'.$x.'" y="'.$y.'" width="'.$legendWidth.'" height="'.$legendHeight.'" style="stroke: '.$this->config['legendBorderColor'].'; fill: '.$this->config['containerBackgroundColor'].'; fill-opacity:'.$this->config['legendOpacity'].';" />';
+
+				$lineStart = $x +  $this->config['graphSupComponentSpacing'];
+				$currentLine = $y + $this->config['graphSupComponentSpacing'];
+				for($i = 0; $i < count($row_names); $i++){
+					$currentLine += $lineHeight;
+					$color = $this->graphData->getColor($i);
+					$x = $lineStart + ($this->config['symbolSize']/2);
+					$y = $currentLine - ($lineHeight/2);
+					switch($this->graphData->row_symbols[$i]){
+						case 'square':
+							$legend .= '<rect pointtype="square" x="'.($x - ($this->config['symbolSize'] / 2)).'" y="'.($y - ($this->config['symbolSize'] / 2)).'" width="'.$this->config['symbolSize'].'" height="'.$this->config['symbolSize'].'" fill="'.$color.'" />';
+							break;
+						case 'circle':
+						default:
+							$legend .= '<circle pointtype="circle" cx="'.$x.'" cy="'.$y.'" r="'.($this->config['symbolSize'] / 2).'" fill="'.$color.'" />';
+							break;
+						case 'cross':
+							$c = 0.25 * $this->config['symbolSize'];
+							$b = $c * sqrt(0.5);
+							$d = $this->config['symbolSize'] / 2;
+							$a = $d - $b;
+							$cross = array();	
+							$cross[0] = $x.','.($y - $b);
+							$cross[1] = ($x + $a).','.($y - $d);
+							$cross[2] = ($x + $d).','.($y - $a);
+							$cross[3] = ($x + $b).','.$y;
+							$cross[4] = ($x + $d).','.($y + $a);
+							$cross[5] = ($x + $a).','.($y + $d);
+							$cross[6] = $x.','.($y + $b);
+							$cross[7] = ($x - $a).','.($y + $d);
+							$cross[8] = ($x - $d).','.($y + $a);
+							$cross[9] = ($x - $b).','.$y;
+							$cross[10] = ($x - $d).','.($y - $a);
+							$cross[11] = ($x - $a).','.($y - $d);
+							$legend .= '<polygon pointtype="cross" points="'.implode(' ', $cross).'" fill="'.$color.'" />';
+							break;
+						case 'triangle':
+							$legend .= '<polygon pointtype="triangle" points="'.$x.','.($y -($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x +($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x -($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).'" fill="'.$color.'" />';
+							break;
+					}
+
+					$legend .= '<text x="'.($lineStart  + $this->config['symbolSize']).'" y="'.($currentLine - $lineHeight / 2 + $maxHeight * 0.25).'" style="fill: '.$this->config['generalFontColor'].'; font-family: '.$this->config['generalFont'].'; font-size: '.$this->config['generalFontSize'].'pt;">&nbsp;'.$row_names[$i].'</text>';
+				}
+
+				$legend .= '</g>';
+				$this->svg .= $legend;
+			}
+		}
+	}
+
 	function drawBasics($stacked = false, $labelType = false, $swapAxes = false){
 		$this->calcGraph($stacked, $labelType, false, $swapAxes);
 		$this->writeTitle();	//Titel hinzufuegen
 	}
+
 	function calcWordDim($font, $size, $text, $angle = 0){                               
 		$font  = $this->font_dir.$font.'.ttf';
 		$dimensions = imagettfbbox($size, $angle, $font, $text);
@@ -425,6 +524,7 @@ class graphSVGImage{
 				'y'=>max(abs($dimensions[7] - $dimensions[3]),abs($dimensions[5] - $dimensions[1])),
 				'startY'=>abs($dimensions[7]-$dimensions[1]));
 	}
+
 	function addTickMark($pos, $Ymode = false, $customVal = null){
 		$tickLength = 1.5;
 		if($Ymode){
@@ -443,6 +543,7 @@ class graphSVGImage{
 			$this->svg .= '<line x1="'.$pos.'" y1="'.($y - ($this->config['axisThickness'] * $tickLength)).'" x2="'.$pos.'" y2="'.($y + ($this->config['axisThickness'] * $tickLength)).'" style="stroke:'.$this->config['axisColor'].';stroke-width:'.$this->graphData->config['axisThickness'].'" />';
 		}
 	}
+
 	function xLabels($stacked = false, $ySwapped = false, $nonNumeric = false){
 		$labels = $this->graphFunctions->xLabels;
 		$x = $this->graphFunctions->graph['x1'];
@@ -455,6 +556,7 @@ class graphSVGImage{
 			$x += $dist;
 		}
 	}
+
 	private function yLabels($stacked = false){
 		if(isset($this->graphFunctions->graph['x1'])){
 			$yLabels = '';
@@ -473,6 +575,7 @@ class graphSVGImage{
 			$this->svg .= $yLabels;
 		}
 	}
+
 	private function xLabel($x, $y, $text, $center = false){
 		$args = "";
 		if($center){
@@ -510,6 +613,7 @@ class graphSVGImage{
 		}
 		$this->svg = '<svg id="'.$this->graphData->id.'" graphtype="'.$this->type.'" graphframe="'.implode(';', $this->graphFunctions->graph).';'.implode(';', $this->graphData->getyLabels(2, $stacked)).$xLabels.'" graphconfig="'.str_replace('"', '\'', json_encode($this->config)).'" datasets="'.str_replace('"', '\'', json_encode($this->graphData->getDatasets($sort))).'" presets="'.$row_colors.';'.$sec_row_colors.';'.$row_symbols.'" viewBox="0 0 '.$this->config['containerWidth'].' '.$this->config['containerHeight'].'" width="100%" style="'.$this->readStyle().'">'; //svg-element beginnen
 	}
+
 	function drawXYAxes($secondYAxis = false, $disableXAxis = false, $disableYAxis = false){
 		$axes = '';
 		$axis_color = $this->graphData->config['axisColor'];
@@ -521,6 +625,7 @@ class graphSVGImage{
 		}
 		$this->svg .= $axes;
 	}
+
 	function createCustomZeroLineX($xYflipped = false){
 		$axes = '';
 		$axis_color = $this->graphData->config['axisColor'];
@@ -531,12 +636,14 @@ class graphSVGImage{
 		}
 		$this->svg .= $axes;
 	}
+
 	function createCustomZeroLineY(){
 		$axes = '';
 		$axis_color = $this->graphData->config['axisColor'];
 		$axes .= '<line x1="'.$this->graphFunctions->graph['x0'].'" y1="'.$this->graphFunctions->graph['y1'].'" x2="'.$this->graphFunctions->graph['x0'].'" y2="'.$this->graphFunctions->graph['y2'].'" style="stroke:'.$axis_color.';stroke-width:'.$this->graphData->config['axisThickness'].'" />';
 		$this->svg .= $axes;
 	}
+
 	function createGrid($x_position = 0, $y_position = 0){
 		$grid = '';		
 		if($y_position != 0){
@@ -584,9 +691,12 @@ class graphSVGImage{
 		$y = $this->graphData->config['topPadding'] + $this->calcWordDim($font, $this->graphData->config['graphTitleFontSize'], $this->graphData->title)['y'];
 		$this->svg .= '<text x="'.$x.'" y="'.$y.'" text-anchor="'.$alignment.'" style="font-family: '.$this->config['generalFont'].'; font-size: '.$this->config['graphTitleFontSize'].'pt; fill: '.$this->config['graphTitleColor'].';"><tspan >'.$this->graphData->title.'</tspan></text>'; 
 	}
+
 	function getSVG(){
+		if($this->config['showLegend']) $this->drawLegend();
 		return $this->svg.'</svg>';
 	}
+
 	private function rotatePoint($origin, $point, $angle){
 		$s = sin($angle * M_PI/180);
 		$c = cos($angle * M_PI/180);

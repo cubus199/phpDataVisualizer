@@ -19,8 +19,9 @@ $config=array(
 	"graphTitleFontSize" => 36,
 	"symbolSize" => 14,
 	"graphLineThickness"=>4,
-	"generalFontSize" => "18",
+	"generalFontSize" => 18,
 	"yUnit" => '°C',
+	"showLegend" => true
 );
 $graphData = new graphData('Rendered Image | vert. Bar - Graph (stacked)','test', null, 'darkNature.php', $config);
 //$graphData->row_colors = array('#82F477','#96F7F2','#6196D7');
@@ -139,8 +140,9 @@ ob_start();
 $graphImage->outputImg();
 $binary = ob_get_clean();
 echo '<tr><td><img src="data:image/png;base64,'. base64_encode($binary) .'" width="100%" height="auto"></td>';
-$graphData->title = 'SVG | Line - Graph';
+$graphData->title = 'SVG | Line - Graph + Legend';
 $graphData->id = 'lineTest';
+$graphData->row_names = array('sun', 'kiwi', 'leaves');
 $svgGraph = new graphSVGImage($graphData);
 $svgGraph->drawLineGraph(false, 1);
 $svg = $svgGraph->getSVG();
