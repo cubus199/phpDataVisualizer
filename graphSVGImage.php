@@ -318,7 +318,6 @@ class graphSVGImage{
 		$radius = $this->graphFunctions->graph['radius']/2;
 		$startX = $cx+$radius;
 		$startY = $cy;
-		print_r($temp = $this->rotatePoint(array($cx, $cy), array($startX,$startY), 45));
 		foreach($this->graphData->datasets as $dataset){
 			$colors = ($dataset->colors != null)?$dataset->colors:$this->graphData->row_colors;
 			$i = 0;
