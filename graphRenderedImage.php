@@ -537,6 +537,14 @@ class graphRenderedImage{
 							);
 				imagefilledpolygon($this->img,$points,count($points)/2, $color);
 				break;
+			case 'diamond':
+				$points = array($x, $y - $this->graphData->config['symbolSize'] / 2,
+							$x + $this->graphData->config['symbolSize'] / 2, $y,
+							$x, $y + $this->graphData->config['symbolSize'] / 2,
+							$x - $this->graphData->config['symbolSize'] / 2, $y
+							);
+				imagefilledpolygon($this->img,$points,count($points)/2, $color);
+				break;
 		}
 	}
 

@@ -419,7 +419,10 @@ class graphSVGImage{
 				return '<polygon pointtype="cross" '.$args.' points="'.implode(' ', $cross).'" fill="'.$color.'" />';
 				break;
 			case 'triangle':
-				 return'<polygon pointtype="triangle" '.$args.' points="'.$x.','.($y -($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x +($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x -($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).'" fill="'.$color.'" />';
+				return'<polygon pointtype="triangle" '.$args.' points="'.$x.','.($y -($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x +($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).' '.($x -($this->config['symbolSize'] / 2)).','.($y + ($this->config['symbolSize'] / 4 * sqrt(3))).'" fill="'.$color.'" />';
+				break;
+			case 'diamond':
+				return'<polygon pointtype="diamond" '.$args.' points="'.($x).','.($y - $this->config['symbolSize'] / 2).' '.($x +$this->config['symbolSize'] / 2).','.$y.' '.$x.','.($y + $this->config['symbolSize'] / 2).' '.($x - $this->config['symbolSize'] / 2).','.$y.'" fill="'.$color.'" />';
 				break;
 		}
 	}
