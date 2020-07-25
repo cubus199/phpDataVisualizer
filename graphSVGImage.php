@@ -344,7 +344,7 @@ class graphSVGImage{
 	 */
 	function drawRadarChart($stacked = false){
 		$this->type = 'radarChart';
-		$this->drawBasics($stacked);
+		$this->drawBasics($stacked, 1);
 		$this->graphFunctions->calcCenteredGraph();
 		$cx = $this->graphFunctions->graph['x'];
 		$cy = $this->graphFunctions->graph['y'];
@@ -355,12 +355,14 @@ class graphSVGImage{
 		//drawing axes & grid:
 		$j = 0;
 		foreach($this->graphData->datasets as $dataset){
-			for($i = 1; $i < count($this->graphFunctions->yLabels); $i++){
+			for($i = 0; $i < count($this->graphFunctions->yLabels); $i++){
 				$init = array($cx + ($i * $radius / (count($this->graphFunctions->yLabels)-1)), $cy);
 				$current = $this->rotatePoint(array($cx, $cy), $init, $angle * $j);
 				$next = $this->rotatePoint(array($cx, $cy), $init, $angle * ($j + 1));
-				$this -> svg .= '<line x1="'.$current[0].'" y1="'.$current[1].'" x2="'.$next[0].'" y2="'.$next[1].'" style="stroke:'.$this->graphData->config['gridColor'].'; stroke-width: 0.4; stroke-dasharray: 4,4;" />'; //drawing grid
-				if($j == 0){
+				if($i > 0){ // skip grid at the centerpoint
+					$this -> svg .= '<line x1="'.$current[0].'" y1="'.$current[1].'" x2="'.$next[0].'" y2="'.$next[1].'" style="stroke:'.$this->graphData->config['gridColor'].'; stroke-width: 0.4; stroke-dasharray: 4,4;" />'; //drawing grid
+				}
+				if($j == 0){ // only draw tickmarks and labels at the first axis
 					$tickX = $cx + ($i * $radius / (count($this->graphFunctions->yLabels)-1));
 					$this->addTickMark($tickX, false, $cy);
 					$label = $this->graphFunctions->yLabels[$i];
@@ -369,15 +371,12 @@ class graphSVGImage{
 			}
 			
 			$this->svg .= '<line x1="'.$cx.'" y1="'.$cy.'" x2="'.$x.'" y2="'.$y.'" stroke-linecap="round" style="stroke: '.$this->config['axisColor'].'; stroke-width: '.$this->graphData->config['axisThickness'].'; " />'; // drawing axes
+			$this->xLabel($x,$y,$this->graphFunctions->xLabels[$j]['display']);
 			$temp = $this->rotatePoint(array($cx, $cy), array($x,$y), $angle);
 			$x = $temp[0];
 			$y = $temp[1];
 			$j++;
 		}
-		//drawing 0-Label:
-		$this->addTickMark($cx, false, $cy);
-		$label = $this->graphFunctions->yLabels[0];
-		$this->xLabel($cx, $cy + $label['startY'], $label['display']);
 		
 		$j = 0;
 		foreach($this->graphData->datasets as $dataset){
