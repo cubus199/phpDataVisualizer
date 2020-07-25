@@ -133,7 +133,8 @@ echo '<td>'.$svg.'</td></tr>';
 /*
  * Line - Graph (not stacked)
  */
-$graphData->title = 'Rendered Image | Line - Graph';
+$graphData->row_names = array('sun', 'kiwi', 'leaves');
+$graphData->title = 'Rendered Image | Line - Graph + Legend';
 $graphImage = new graphRenderedImage($graphData);
 $graphImage->drawLineGraph(false,1);
 ob_start();
@@ -142,12 +143,12 @@ $binary = ob_get_clean();
 echo '<tr><td><img src="data:image/png;base64,'. base64_encode($binary) .'" width="100%" height="auto"></td>';
 $graphData->title = 'SVG | Line - Graph + Legend';
 $graphData->id = 'lineTest';
-$graphData->row_names = array('sun', 'kiwi', 'leaves');
 $svgGraph = new graphSVGImage($graphData);
 $svgGraph->drawLineGraph(false, 1);
 $svg = $svgGraph->getSVG();
 echo '<td>'.$svg.'</td></tr>';
 
+$graphData->row_names = null;
 /*
  * Line - Graph (not stacked)
  */
