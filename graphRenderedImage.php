@@ -320,12 +320,111 @@ class graphRenderedImage{
 				$end = round($start + ($value/$sumValue)*360);
 				$color = $this->graphData->getColor($i);
 				imagefilledarc ($this->img, $cx , $cy , $radius , $radius , $start , $end , $this->setColorHex($color), IMG_ARC_PIE);
-				//echo ($value/$sumValue).';start'.$start.';Ende'.$end.'|';
 				$start = $end;
 				$i++;
 			}
 		}
 	}
+
+	function drawLegend(){
+		$row_names = $this->graphData->row_names;
+		$font = $this->graphData->config['generalFont'];
+		if($row_names != null){
+			if(count($row_names) == count($this->graphData->datasets[0]->values)){
+
+				$maxWidth = 0;
+				$maxHeight = 0;
+				foreach($row_names as $name){
+					$dims = $this->calcWordDim($font, $this->graphData->config['generalFontSize'], ' '.$name);
+					if($dims['x'] > $maxWidth) $maxWidth = $dims['x'];
+					if($dims['y']*1.6 > $maxHeight) $maxHeight = $dims['y'] *1.6;
+				}
+
+				$lineHeight = max($maxHeight, $this->graphData->config['symbolSize'] * 1.6);
+
+				$legendWidth = $maxWidth + $this->graphData->config['symbolSize'] + 2 * $this->graphData->config['graphSupComponentSpacing'];
+				$legendHeight =  $lineHeight * count($row_names) + 2 * $this->graphData->config['graphSupComponentSpacing'];
+				
+				switch($this->graphData->config['legendPosition']){
+					case 'topLeft':
+						$x = $this->graphFunctions->graph['x1'] + $this->graphData->config['graphSupComponentSpacing'];
+						$y = $this->graphFunctions->graph['y1'] + $this->graphData->config['graphSupComponentSpacing'];
+						break;
+
+					default:
+					case 'topRight':
+						$x = $this->graphFunctions->graph['x2'] - ($legendWidth + $this->graphData->config['graphSupComponentSpacing']);
+						$y = $this->graphFunctions->graph['y1'] + $this->graphData->config['graphSupComponentSpacing'];
+						break;
+
+					case 'bottomLeft':
+						$x = $this->graphFunctions->graph['x1'] + $this->graphData->config['graphSupComponentSpacing'];
+						$y = $this->graphFunctions->graph['y2'] - ($legendHeight + $this->graphData->config['graphSupComponentSpacing']);
+						break;
+
+					case 'bottomRight':
+						$x = $this->graphFunctions->graph['x2'] - ($legendWidth + $this->graphData->config['graphSupComponentSpacing']);
+						$y = $this->graphFunctions->graph['y2'] - ($legendHeight + $this->graphData->config['graphSupComponentSpacing']);
+						break;
+				}
+
+				$opacity = dechex(round($this->graphData->config['legendOpacity'] * 255));
+				imagefilledrectangle ($this->img, $x, $y, $x+$legendWidth, $y+$legendHeight, $this->setAlphaColorHex($this->graphData->config['containerBackgroundColor'].$opacity));
+				imagerectangle($this->img, $x, $y, $x+$legendWidth, $y+$legendHeight, $this->setColorHex($this->graphData->config['legendBorderColor']));		
+				
+				$size = $this->graphData->config['symbolSize'];
+				$lineStart = $x +  $this->graphData->config['graphSupComponentSpacing'];
+				$currentLine = $y + $this->graphData->config['graphSupComponentSpacing'];
+				for($i = 0; $i < count($row_names); $i++){
+					$currentLine += $lineHeight;
+					$color = $this->setColorHex($this->graphData->getColor($i));
+					$x = $lineStart + ($this->graphData->config['symbolSize']/2);
+					$y = $currentLine - ($lineHeight/2);
+					switch($this->graphData->row_symbols[$i]){
+						case 'square':
+							imagefilledrectangle ($this->img, $x - $size*0.5, $y - $size*0.5, $x + $size*0.5, $y + $size*0.5, $color);
+							break;
+						case 'circle':
+						default:
+							imagefilledellipse ($this->img, $x , $y , $this->graphData->config['symbolSize'], $this->graphData->config['symbolSize'], $color);
+							break;
+						case 'cross':
+							$c = 0.25 * $size;
+							$b = $c * sqrt(0.5);
+							$d = $size / 2;
+							$a = $d - $b;
+							$cross = array(
+								$x,($y - $b),
+								($x + $a),($y - $d),
+								($x + $d),($y - $a),
+								($x + $b),$y,
+								($x + $d),($y + $a),
+								($x + $a),($y + $d),
+								$x,($y + $b),
+								($x - $a),($y + $d),
+								($x - $d),($y + $a),
+								($x - $b),$y,
+								($x - $d),($y - $a),
+								($x - $a),($y - $d)
+							);	
+	
+							imagefilledpolygon($this->img,$cross,count($cross)/2,$color);
+							break;
+						case 'triangle':
+							$points = array($x, $y -($this->graphData->config['symbolSize'] /4 * sqrt(3)),
+										$x -($this->graphData->config['symbolSize'] / 2), $y + ($this->graphData->config['symbolSize'] / 4 * sqrt(3)),
+										$x +($this->graphData->config['symbolSize'] / 2), $y + ($this->graphData->config['symbolSize'] / 4 * sqrt(3))
+										);
+							imagefilledpolygon($this->img,$points,count($points)/2, $color);
+							break;
+					}
+
+					imagettftext($this->img, $this->graphData->config['generalFontSize'], 0, $lineStart  + $this->graphData->config['symbolSize'], $currentLine - $lineHeight / 2 + $maxHeight * 0.25, $this->setColorHex($this->graphData->config['generalFontColor']), $this->font_dir.$this->graphData->config['generalFont'].'.ttf', ' '.$row_names[$i]);
+				}
+			}
+		}
+	}
+
 	/*
 	 * Graphgroesse Berechnung
 	 */
@@ -472,6 +571,13 @@ class graphRenderedImage{
 	/*
 	 * Farben erstellen
 	 */
+	function setAlphaColorHex($hex){
+		if(!isset($this->colors[$hex])){
+			list($r, $g, $b, $a) = sscanf($hex, '#%02x%02x%02x%02x'); //Hex Farbe ins RGB Format umwandeln
+			$this->colors[$hex] = $this->setColor($r, $g, $b, 127- floor($a / 2));
+		}
+		return $this->colors[$hex];
+	}
 	function setColorHex($hex){
 		if(!isset($this->colors[$hex])){
 			list($r, $g, $b) = sscanf($hex, '#%02x%02x%02x'); //Hex Farbe ins RGB Format umwandeln
@@ -479,13 +585,14 @@ class graphRenderedImage{
 		}
 		return $this->colors[$hex];
 	}
-	function setColor($r, $g, $b){
-		return imagecolorallocatealpha($this->img, $r, $g, $b, 0);
+	function setColor($r, $g, $b, $a = 0){
+		return imagecolorallocatealpha($this->img, $r, $g, $b, $a);
 	}
 	/*
 	 * Bild ausgeben
 	 */
 	function outputImg(){
+		if($this->graphData->config['showLegend']) $this->drawLegend();
 		imagepng($this->img);
 		imagedestroy($this->img);
 	}
