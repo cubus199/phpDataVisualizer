@@ -86,7 +86,7 @@ class graphSVGImage{
 						}
 					}
 					if(($y1 - ($this->graphData->config['axisThickness'])*0.5) < $this->graphFunctions->graph['y2'] || !$first && !$stacked){
-						$color = $this->graphData->getColor($j);
+						$color = $this->graphData->getColor($j, $i);
 						$yTemp = ($first || !$stacked)?$y1 - ($this->graphFunctions->graph['y2']):$y1;
 						$this->svg .= '<rect class="bar" x="'.$x1.'" y="'.($switch?$y_1:$y2).'" width="'.($x2 - $x1).'" height="'.($switch?($y_2 - $y_1):($y1 - $y2)).'" style="fill: '.$color.';" />';
 						$first = false;
@@ -159,7 +159,7 @@ class graphSVGImage{
 					}
 					if(($this->graphFunctions->graph['x1'] + $this->graphData->config['axisThickness']-1)*0.5 < $x2 || !$first && !$stacked){
 						$xTemp = ($first || !$stacked)?$x1 + ($this->graphData->config['axisThickness'])*0.5:$x1;
-						$color = $this->graphData->getColor($j);
+						$color = $this->graphData->getColor($j, $i);
 						$this->svg .= '<rect class="bar" x="'.($switch?$x_2:$xTemp).'" y="'.$y1.'" width="'.($switch?($x_1-$x_2):($x2 - $xTemp)).'" height="'.($y2 - $y1).'" style="fill: '.$color.';" />';
 						$first = false;
 					}
@@ -204,7 +204,7 @@ class graphSVGImage{
 				if(!isset($symbols[$i])){
 					$symbols[$i] = 'circle';
 				}
-				$color = $this->graphData->getColor($i);
+				$color = $this->graphData->getColor($i, $j);
 				$this->svg .= $this->getSymbol($symbols[$i], $x, $y, $color, $dataset->x_name, $value);
 
 				$i++;
@@ -235,7 +235,7 @@ class graphSVGImage{
 				$y2 = $this->graphFunctions->graph['y0'] - $this->graphFunctions->graph['scaleNumericY'] * $datasets[$i + 1]->values[$j];
 				//$x2 = $this->graphFunctions->graph['x1'] + $scaleX * ($nonNumericXAxis?$i+1:$datasets[$i + 1]->x_name);
 				//$y2 = $this->graphFunctions->graph['y2'] - $scaleY * $datasets[$i + 1]->values[$j];
-				$color = $this->graphData->getColor($j,true);
+				$color = $this->graphData->getColor($j, null, true);
 				if($connection == 0){
 					$this->svg .= '<line class="graphLine" x1="'.$x1.'" y1="'.$y1.'" x2="'.$x2.'" y2="'.$y2.'" stroke-linecap="round" style="stroke: '.$color.'; stroke-width: '.$this->graphData->config['graphLineThickness'].'; " />';
 				}else{
@@ -262,7 +262,7 @@ class graphSVGImage{
 				$spline = new cubicSplineInterpolation($line, $connection == 2);
 				$spline->interpolate();
 				$lineOut = $spline->getLine($this->pointCount);
-				$color = $this->graphData->getColor($j, true);
+				$color = $this->graphData->getColor($j, null, true);
 				$this->svg .= '<polyline class="graphCubicLine" points="'.implode(' ', array_map(function ($element){return implode(',', $element);}, $lineOut)).'" stroke-linecap="round" style="fill: transparent; stroke: '.$color.'; stroke-width: '.$this->graphData->config['graphLineThickness'].'; " />';
 				$j++;
 			}
@@ -285,7 +285,7 @@ class graphSVGImage{
 		$start = 0;
 		$cx = $this->graphFunctions->graph['cx'];
 		$cy = $this->graphFunctions->graph['cy'];
-		$radius = $this->graphFunctions->graph['radius']/2;
+		$radius = $this->graphFunctions->graph['radius'];
 		$startX = $cx+$radius;
 		$startY = $cy;
 		foreach($this->graphData->datasets as $dataset){
@@ -297,7 +297,7 @@ class graphSVGImage{
 				$temp = $this->rotatePoint(array($cx, $cy), array($startX,$startY), $angle);
 				$endX = $temp[0];
 				$endY = $temp[1];
-				$color = $this->graphData->getColor($i);
+				$color = $this->graphData->getColor($i, 0);
 				$this->svg .= '<path d="M '.$cx.' '.$cy.' L '.$startX.' '.$startY.' A '.$radius.' '.$radius.' 0 '.($angle >= 180 ? 1 : 0).' 1 '.$endX.' '.$endY.'" fill="'.$color.'" ></path>';
 				//echo ($value/$sumValue).';start'.$start.';Ende'.$end.'|';
 				//$start = $end;
@@ -313,10 +313,10 @@ class graphSVGImage{
 	function drawRadarChart($stacked = false){
 		$this->type = 'radarChart';
 		$this->drawBasics($stacked, 1);
-		$this->graphFunctions->calcCenteredGraph();
+		$this->graphFunctions->calcCenteredGraph(true);
 		$cx = $this->graphFunctions->graph['cx'];
 		$cy = $this->graphFunctions->graph['cy'];
-		$radius = $this->graphFunctions->graph['radius']/2;
+		$radius = $this->graphFunctions->graph['radius'];
 		$x = $cx+$radius;
 		$y = $cy;
 		$angle = (1/count($this->graphData->datasets))*360;
@@ -339,7 +339,28 @@ class graphSVGImage{
 			}
 			
 			$this->svg .= '<line x1="'.$cx.'" y1="'.$cy.'" x2="'.$x.'" y2="'.$y.'" stroke-linecap="round" style="stroke: '.$this->config['axisColor'].'; stroke-width: '.$this->graphData->config['axisThickness'].'; " />'; // drawing axes
-			$this->xLabel($x,$y,$this->graphFunctions->xLabels[$j]['display']);
+			
+			if(round($x,2) == round($cx,2)){
+				$alignment = 'middle';
+				$xOffset = 0;
+			}elseif($x < $cx){
+				$alignment = 'end';
+				$xOffset = - $this->config['labelPadding'];
+			}else{
+				$alignment = 'start';
+				$xOffset = $this->config['labelPadding'];
+			}
+
+			if(round($y, 2) == round($cy, 2)){
+				$yOffset = $this->calcWordDim($this->config['generalFont'], $this->config['generalFontSize'], $this->graphFunctions->xLabels[$j]['display'])['y'] / 2;
+			}elseif($y > $cy){
+				$yOffset = $this->calcWordDim($this->config['generalFont'], $this->config['generalFontSize'], $this->graphFunctions->xLabels[$j]['display'])['y'] + $this->config['labelPadding'];
+			}else{
+				$yOffset = - $this->config['labelPadding'];
+			}
+
+			$this->svg .= $this->getLabel($x + $xOffset, $y + $yOffset, $this->graphFunctions->xLabels[$j]['display'], 0, $alignment);
+			//$this->yLabel($x,$y,$this->graphFunctions->xLabels[$j]['display']);
 			$temp = $this->rotatePoint(array($cx, $cy), array($x,$y), $angle);
 			$x = $temp[0];
 			$y = $temp[1];
@@ -350,8 +371,8 @@ class graphSVGImage{
 		foreach($this->graphData->datasets as $dataset){
 			$i = 0;
 			foreach($dataset->values as $value){
-				$color = $this->graphData->getColor($i);
-				$sec_color = $this->graphData->getColor($i, true);
+				$color = $this->graphData->getColor($i, $j);
+				$sec_color = $this->graphData->getColor($i, null, true);
 				
 				//calculate scaling:
 				$labelsY = $this->graphData->getYLabels(2, $stacked);
@@ -376,7 +397,8 @@ class graphSVGImage{
 				
 				$this->svg .= '<line class="graphLine" x1="'.$turnedPrev[0].'" y1="'.$turnedPrev[1].'" x2="'.$turned[0].'" y2="'.$turned[1].'" stroke-linecap="round" style="stroke: '.$sec_color.'; stroke-width: '.$this->graphData->config['graphLineThickness'].'; " />';
 				
-				$this->svg .= '<circle xval="'.$dataset->x_name.'" yval="'.$value.'" cx="'.$turned[0].'" cy="'.$turned[1].'" r="'.($this->config['symbolSize'] / 2).'" fill="'.$color.'" />';
+				$this->svg .= $this->getSymbol($this->graphData->getSymbol($i, $j), $turned[0], $turned[1], $color, $dataset->x_name, $value);
+				
 				$i++;
 			}
 			$j++;
@@ -558,17 +580,21 @@ class graphSVGImage{
 	}
 
 	private function xLabel($x, $y, $text, $center = false){
-		$args = "";
-		if($center){
-			$args .= ' text-anchor="middle" ';
-		}
-		if($this->config['colLabelRotation'] != 0){
-			$args .= ' transform="rotate('.$this->config['colLabelRotation'].' '.$x.','.$y.')" ';
-		}
-		$this->svg .= '<text class="xLabel" x="'.$x.'" y="'.$y.'" '.$args.' style="fill: '.$this->config['generalFontColor'].'; font-family: '.$this->config['generalFont'].'; font-size: '.$this->config['generalFontSize'].'pt;">'.$text.'</text>';
+			$this->svg .= $this->getLabel($x, $y, $text, $this->config['colLabelRotation'], $center?'middle':'start', 'xLabel');
 	}
 	private function yLabel($x, $y, $text){
-		$this->svg .= '<text class="yLabel" x="'.$x.'" y="'.$y.'" text-anchor="end" style="fill: '.$this->config['generalFontColor'].'; font-family: '.$this->config['generalFont'].'; font-size: '.$this->config['generalFontSize'].'pt;">'.$text.'</text>';
+		$this->svg .= $this->getLabel($x, $y, $text, 0, 'end', 'yLabel');
+	}
+	private function getLabel($x, $y, $text, $angle = 0, $alignment = 'start', $class=null){
+		$args = '';
+		if($angle != 0){
+			$args .= 'transform="rotate('.$angle.' '.$x.','.$y.')"';
+		}
+		if($class != null){
+			$args .= ' class="'.$class.'"';
+		}
+
+		return '<text x="'.$x.'" y="'.$y.'" '.$args.' text-anchor="'.$alignment.'" style="fill: '.$this->config['generalFontColor'].'; font-family: '.$this->config['generalFont'].'; font-size: '.$this->config['generalFontSize'].'pt;">'.$text.'</text>';
 	}
 	function calcGraph($stacked, $labelType = 0, $sort = false, $swapAxes = false){
 		$limits = $this->graphData->getLimits(true);

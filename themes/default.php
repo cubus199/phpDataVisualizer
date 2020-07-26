@@ -48,6 +48,7 @@
 		"yLabelCount" => 5,							// maximum number of labels at the y-axis
 		"xUnit" => '',								// Unit displayed besides the labels at the x-axis
 		"yUnit" => '',								// Unit displayed besides the labels at the y-axis
+		"labelPadding" => 5,
 
 		// graph
 		"graphLineThickness"=>3,					// thickness of the line of line-graphs

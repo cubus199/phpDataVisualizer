@@ -281,6 +281,15 @@ class graphData{
 		return 'no datasets found';
 	}
 
+	function getXNames(){
+		if($this->datasets != null){
+			return array_map(function($dataset){
+				return $dataset->x_name;
+			}, $this->datasets);
+		}
+		return 'no datasets found';
+	}
+
 	function calcLimits($min, $max, $shiftAxes = false){
 		$minVal = 0;
 		$maxVal = 0;
@@ -340,13 +349,32 @@ class graphData{
 		return $shift;
 	}
 	
-	function getColor($id, $secondary = false){
-		if(isset($this->row_colors[$id]) && !$secondary || isset($this->sec_row_colors[$id]) && $secondary){
-			if(!$secondary) return $this->row_colors[$id];
-			return $this->sec_row_colors[$id];
+	function getColor($rowId, $setId = null, $secondary = false){
+
+		if($setId != null && !$secondary && isset($this->datasets[$setId]->row_symbols[$rowId])){
+			return $this->datasets[$setId]->row_symbols[$rowId];
 		}
-		if(!$secondary) return $this->config['primaryColors'][$id % count($this->config['primaryColors'])];
-		return $this->config['secondaryColors'][$id % count($this->config['secondaryColors'])];
+
+		if(isset($this->sec_row_colors[$rowId]) && $secondary){
+			return $this->sec_row_colors[$rowId];
+		}
+
+		if(isset($this->row_colors[$rowId])){
+			return $this->row_colors[$rowId];
+		}
+
+		if(!$secondary) return $this->config['primaryColors'][$rowId % count($this->config['primaryColors'])];
+		return $this->config['secondaryColors'][$rowId % count($this->config['secondaryColors'])];
+	}
+
+	function getSymbol($rowId, $setId = null){
+		if($setId != null && isset($this->datasets[$setId]->row_symbols[$rowId])){
+			return $this->datasets[$setId]->row_symbols[$rowId];
+		}
+		if(isset($this->row_symbols[$rowId])){
+			return $this->row_symbols[$rowId];
+		}
+		return 'circle';
 	}
 }
 ?>

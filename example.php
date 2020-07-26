@@ -205,6 +205,14 @@ echo '<td>'.$svg.'</td></tr>';
 /*
  * Radar - Graph (not stacked)
  */
+
+$graphData->datasets = array();
+$graphData->addDataset(new dataset(0, array(26,15,10)));
+$graphData->addDataset(new dataset(2, array(10,6,10)));
+$graphData->addDataset(new dataset(3, array(50,8.2,40)));
+$graphData->addDataset(new dataset(12, array(80,6,15)));
+$graphData->addDataset(new dataset(5, array(5,36,33)));
+
 $graphData->row_names = array('sun', 'kiwi', 'leaves');
 $graphData->title = 'Rendered Image | Pie - Graph';
 $graphImage = new graphRenderedImage($graphData);
@@ -213,14 +221,6 @@ ob_start();
 $graphImage->outputImg();
 $binary = ob_get_clean();
 echo '<tr><td><img src="data:image/png;base64,'. base64_encode($binary) .'" width="100%" height="auto"></td>';
-
-$graphData->datasets = array();
-$graphData->addDataset(new dataset(0, array(26,15,10)));
-$graphData->addDataset(new dataset(-1, array(40,5,7)));
-$graphData->addDataset(new dataset(2, array(10,6,10)));
-$graphData->addDataset(new dataset(3, array(50,8.2,40)));
-$graphData->addDataset(new dataset(12, array(80,6,15)));
-$graphData->addDataset(new dataset(5, array(5,36,33)));
 
 $graphData->title = 'SVG | Netzdiagramm';
 $graphData->id = 'radarTest';

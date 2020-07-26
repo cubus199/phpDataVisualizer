@@ -36,7 +36,7 @@ class graphFunctions{
 							 'y2' => $y2);
 		$this->calcScaling($stacked);
 	}
-	public function calcCenteredGraph(){
+	public function calcCenteredGraph($labelSpacing = false){
 		$font = $this->graphData->config['generalFont'];
 		$topPadding = $this->graphData->config['topPadding'] + ($this->calcWordDim($font, $this->graphData->config['graphTitleFontSize'], $this->graphData->title)['y']*$this->graphData->config['graphTitleSpacingFactor']);
 		$height = $this->graphData->config["containerHeight"] - $this->graphData->config['bottomPadding'] - $topPadding;
@@ -44,12 +44,30 @@ class graphFunctions{
 		$cx = $this-> graphData->config['leftPadding'] + 0.5 * $width;
 		$cy = $topPadding + 0.5 * $height;
 
+		$nameHeight = 0;
+		$nameWidth = 0;
+		$yLabelWidth = 0;
+
+		if($labelSpacing){
+			$nameHeight = max(array_map(function($xName){
+				return $this->calcWordDim($this->graphData->config['generalFont'], $this->graphData->config['generalFontSize'], $xName)['y'];
+			}, $this->graphData->getXNames())) + 2 * $this->graphData->config['labelPadding'];
+
+			$nameWidth = max(array_map(function($xName){
+				return $this->calcWordDim($this->graphData->config['generalFont'], $this->graphData->config['generalFontSize'], $xName)['x'];
+			}, $this->graphData->getXNames())) + 2 * $this->graphData->config['labelPadding'];
+
+			$yLabelWidth = max(array_column($this->yLabels, 'x')) + 2 * $this->graphData->config['labelPadding'];
+		}
+
+		$radius = min($height - 2*$nameHeight, $width - 2* max($nameWidth, $yLabelWidth)) / 2;
+
 		$x1 = $this->graphData->config['leftPadding'];
 		$y1 = $this->graphData->config['topPadding'] + ($this->calcWordDim($font, $this->graphData->config['graphTitleFontSize'], $this->graphData->title)['y']*$this->graphData->config['graphTitleSpacingFactor']);
 		$x2 = $this->graphData->config["containerWidth"] - $this->graphData->config['rightPadding'];
 		$y2 = $this->graphData->config["containerHeight"] - $this->graphData->config['bottomPadding'];
 
-		$this->graph = array('cx'=>$cx, 'cy'=>$cy, 'radius'=> min($height, $width), 'x1'=>$x1, 'y1'=>$y1, 'x2'=>$x2, 'y2'=>$y2);
+		$this->graph = array('cx'=>$cx, 'cy'=>$cy, 'radius'=> $radius, 'x1'=>$x1, 'y1'=>$y1, 'x2'=>$x2, 'y2'=>$y2);
 	}
 	/*
 	 * Berechnen der Skalierungsfaktoren, sowie der Nullstellen
