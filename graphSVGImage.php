@@ -283,8 +283,8 @@ class graphSVGImage{
 			}
 		}
 		$start = 0;
-		$cx = $this->graphFunctions->graph['x'];
-		$cy = $this->graphFunctions->graph['y'];
+		$cx = $this->graphFunctions->graph['cx'];
+		$cy = $this->graphFunctions->graph['cy'];
 		$radius = $this->graphFunctions->graph['radius']/2;
 		$startX = $cx+$radius;
 		$startY = $cy;
@@ -298,7 +298,6 @@ class graphSVGImage{
 				$endX = $temp[0];
 				$endY = $temp[1];
 				$color = $this->graphData->getColor($i);
-				//imagefilledarc ($this->img, $cx , $cy , $radius , $radius , $start , $end , $this->setColorHex($color), IMG_ARC_PIE);
 				$this->svg .= '<path d="M '.$cx.' '.$cy.' L '.$startX.' '.$startY.' A '.$radius.' '.$radius.' 0 '.($angle >= 180 ? 1 : 0).' 1 '.$endX.' '.$endY.'" fill="'.$color.'" ></path>';
 				//echo ($value/$sumValue).';start'.$start.';Ende'.$end.'|';
 				//$start = $end;
@@ -315,8 +314,8 @@ class graphSVGImage{
 		$this->type = 'radarChart';
 		$this->drawBasics($stacked, 1);
 		$this->graphFunctions->calcCenteredGraph();
-		$cx = $this->graphFunctions->graph['x'];
-		$cy = $this->graphFunctions->graph['y'];
+		$cx = $this->graphFunctions->graph['cx'];
+		$cy = $this->graphFunctions->graph['cy'];
 		$radius = $this->graphFunctions->graph['radius']/2;
 		$x = $cx+$radius;
 		$y = $cy;

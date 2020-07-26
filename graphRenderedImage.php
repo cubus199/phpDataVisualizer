@@ -276,8 +276,8 @@ class graphRenderedImage{
 			}
 		}
 		$start = 0;
-		$cx = round($this->graphFunctions->graph['x']);
-		$cy = round($this->graphFunctions->graph['y']);
+		$cx = round($this->graphFunctions->graph['cx']);
+		$cy = round($this->graphFunctions->graph['cy']);
 		$radius = $this->graphFunctions->graph['radius'];
 		foreach($this->graphData->datasets as $dataset){
 			$colors = ($dataset->colors != null)?$dataset->colors:$this->graphData->row_colors;

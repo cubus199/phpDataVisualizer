@@ -205,7 +205,7 @@ echo '<td>'.$svg.'</td></tr>';
 /*
  * Radar - Graph (not stacked)
  */
-
+$graphData->row_names = array('sun', 'kiwi', 'leaves');
 $graphData->title = 'Rendered Image | Pie - Graph';
 $graphImage = new graphRenderedImage($graphData);
 $graphImage->drawVertBarGraph();
