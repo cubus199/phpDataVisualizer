@@ -20,7 +20,7 @@ class color{
 		}else if(strpos($r, '#') == 0){ //converting hex into rgb if it has a leading #
 			$r = substr($r, 1); //remove leading #
 
-			if(preg_match('/^[A-F\d]*$/', $r)){ // check if string is only made of numbers and characters a-f
+			if(preg_match('/^[A-Fa-f\d]*$/', $r)){ // check if string is only made of numbers and characters a-f
 				if(strlen($r) == 6){ // alpha is set to 100% if only 6 characters provided
 					list($this->r, $this->g, $this->b) = sscanf($r, '%02x%02x%02x');
 					$this->alpha = 255;
@@ -46,7 +46,7 @@ class color{
 	 * export color hex format with the alpha-value
 	 */
 	function colorHexAlpha(){
-		return sprintf("#%02x%02x%02x%02x", $this->r, $this->g, $this->b, $this->a);
+		return sprintf("#%02x%02x%02x%02x", $this->r, $this->g, $this->b, $this->alpha);
 	}
 }
 ?>
