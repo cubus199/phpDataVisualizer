@@ -1,3 +1,3 @@
 <?php
-define('FONT_DIR', 'fonts');
+define('FONT_DIR', __DIR__.DIRECTORY_SEPARATOR.'fonts');
 ?>
