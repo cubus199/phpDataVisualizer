@@ -1,22 +1,22 @@
 <?php
-require_once 'env.php'
+require_once 'env.php';
 
 class functionProvider{
 
-    public static function rotatePoint(array $point, array $origin, float $angle){
+    public static function rotatePoint(array $point, array $origin, float $angle): array{
         if($angle >= 360) $angle %= 360; //normalize angles
         if($angle == 0) return $point; //skip calculation if angle is 0
 
-		float $s = sin($angle * M_PI/180);
-		float $c = cos($angle * M_PI/180);
+		$s = sin($angle * M_PI/180);
+		$c = cos($angle * M_PI/180);
 
 		// translate point back to origin:
 		$point[0] -= $origin[0];
 		$point[1] -= $origin[1];
 
 		// rotate point
-		float $xnew = $point[0] * $c - $point[1] * $s;
-		float $ynew = (float) ($point[0] * $s) + (float) ($point[1] * $c);
+		$xnew = $point[0] * $c - $point[1] * $s;
+		$ynew = (float) ($point[0] * $s) + (float) ($point[1] * $c);
 
 		// translate point back:
 		$x = (float) $xnew + (float) $origin[0];
@@ -25,8 +25,8 @@ class functionProvider{
 		return array($x, $y);
     }
     
-    public static function calcTextDim(font $font, float $size, string $text, float $angle = 0){
-        $font_path = FONT_DIR.DIRECTORY_SEPARATOR.$font->path; // prepare path
+    public static function calcTextDim(font $font, float $size, string $text, float $angle = 0): array{
+		$font_path = FONT_DIR.DIRECTORY_SEPARATOR.$font->path; // prepare path
         
         $box = imagettfbbox($size, $angle, $font_path, $text); // analyze measurements
         
