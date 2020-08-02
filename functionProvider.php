@@ -1,7 +1,12 @@
 <?php
+require_once 'env.php'
+
 class functionProvider{
 
     public static function rotatePoint(array $point, array $origin, float $angle){
+        if($angle >= 360) $angle %= 360; //normalize angles
+        if($angle == 0) return $point; //skip calculation if angle is 0
+
 		float $s = sin($angle * M_PI/180);
 		float $c = cos($angle * M_PI/180);
 
@@ -20,6 +25,30 @@ class functionProvider{
 		return array($x, $y);
     }
     
-    
+    public static function calcTextDim(font $font, float $size, string $text, float $angle = 0){
+        $font_path = FONT_DIR.DIRECTORY_SEPARATOR.$font->path; // prepare path
+        
+        $box = imagettfbbox($size, $angle, $font_path, $text); // analyze measurements
+        
+        // measure in relation to axes
+		$width = sqrt(pow($box[4]-$box[6],2)+pow($box[5]-$box[7],2));
+		$height = sqrt(pow($box[6]-$box[0],2)+pow($box[7]-$box[1],2));
+        
+        // find most extreme values
+		$min_x = min( array($box[0], $box[2], $box[4], $box[6]) );
+		$max_x = max( array($box[0], $box[2], $box[4], $box[6]) );
+		$min_y = min( array($box[1], $box[3], $box[5], $box[7]) );
+        $max_y = max( array($box[1], $box[3], $box[5], $box[7]) ); 
+        
+        //prepare data for return
+		$dims = array(
+            'x' => $max_x - $min_x,
+            'y' => $max_y - $min_y,
+            'startX'=> (cos(deg2rad(90 - $angle)) * $height * 0.5+ cos(deg2rad($angle)) * $width *0.5),
+            'startY'=>abs($box[7]-$box[1])
+        );
+        
+		return $dims;
+	}
 }
 ?>
