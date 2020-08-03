@@ -1,15 +1,15 @@
 <?php
 class color{
-	public $r;
-	public $g;
-	public $b;
-	public $alpha;
+	public int $r;
+	public int $g;
+	public int $b;
+	public int $alpha;
 
 	/**
 	 * generating color object
 	 * first param gets considered as hex representation, if only one param is given
 	 */
-	function __construct($r, $g = -1, $b = -1, $a = 255){		
+	function __construct($r, int $g = -1, int $b = -1, int $a = 255){		
 		if($r >= 0 && $r <= 255 && $g >= 0 && $g <= 255 && $b >= 0 && $b <= 255 && $a >= 0 && $a <= 255){
 			$this->r = $r;
 			$this->g = $g;
@@ -38,15 +38,22 @@ class color{
 	 * export color hex format
 	 * hex format doesnot contain the alpha value
 	 */
-	function colorHex(){
+	function colorHex(): string{
 		return sprintf("#%02x%02x%02x", $this->r, $this->g, $this->b);
 	}
 
 	/**
 	 * export color hex format with the alpha-value
 	 */
-	function colorHexAlpha(){
+	function colorHexAlpha(): string{
 		return sprintf("#%02x%02x%02x%02x", $this->r, $this->g, $this->b, $this->alpha);
+	}
+
+	/**
+	 * export GD-compatible alpha value
+	 */
+	function colorGDAlpha(): int{
+		return floor((255 - $this->alpha)/2);
 	}
 }
 ?>
