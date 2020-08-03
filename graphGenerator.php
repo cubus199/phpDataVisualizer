@@ -10,21 +10,25 @@ define('DIAMOND', 4);
 
 class graphGenerator{
 
+	public drawingAgentIF $da;
 
-    private function drawSymbol(drawingAgentIF $da, float $x, float $y, int $type, color $color, float $size){
+	public function __construct(drawingAgentIF $da){
+		$this->da = $da;
+	}
+
+    private function drawSymbol(float $x, float $y, int $type, color $color, float $size){
 		$radius = $size / 2;
 		switch($type){
 			default:
             case CIRCLE:
-                $da->drawArc($x, $y, $radius, 0, 0, $color)
-				$this->writeSVG('<circle pointtype="circle" cx="'.$x.'" cy="'.$y.'" r="'.$radius.'" fill="'.$color->colorHexAlpha().'" />');
+                $this->da->drawArc($x, $y, $radius, 0, 0, $color)
 				break;
 			case SQUARE:
 				$x1 = $x - $radius;
 				$y1 = $y - $radius;
 				$x2 = $x + $radius;
 				$y2 = $y + $radius;
-				$da->drawRectangle($x1, $y1, $x2, $y2, $color);
+				$this->da->drawRectangle($x1, $y1, $x2, $y2, $color);
 				break;
 			case TRIANGLE:
 				$a = $size / 4 * sqrt(3)
@@ -33,7 +37,7 @@ class graphGenerator{
 					$x + $radius, $y + $a,
 					$x - $radius, $y + $a
 				);
-				$da->drawPolygon($triangle, $color);
+				$this->da->drawPolygon($triangle, $color);
                 break;
             case CROSS:
                 $c = $size / 4;
@@ -53,7 +57,7 @@ class graphGenerator{
                     $x - $radius, $y - $a,
                     $x - $a, $y - $radius
                 );
-                $da->drawPolygon($cross, $color);
+                $this->da->drawPolygon($cross, $color);
                 break;
 			case DIAMOND:
 				$diamond = array(
@@ -62,7 +66,7 @@ class graphGenerator{
 					$x, $y + $radius,
 					$x - $radius, $y
 				);
-				$da->drawPolygon($diamond, $color);
+				$this->da->drawPolygon($diamond, $color);
 				break;
 		}
 	}
