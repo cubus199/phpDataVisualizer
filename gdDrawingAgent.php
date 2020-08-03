@@ -29,8 +29,12 @@ class gdDrawingAgent implements drawingAgentIF{
 	/**
 	 * draws a line which connects two points
 	 */
-	public function drawLine(float $x1, float $y1, float $x2, float $y2, float $width, color $color, bool $dashed = false):void{
+	public function drawLine(float $x1, float $y1, float $x2, float $y2, float $width, color $color, bool $dashed = true):void{
 		imagesetthickness($this->img, $width);
+		if($dashed){
+			$style = array_merge(array_fill(0, $width, $this->allocAlphaColorHex($color)), array_fill(0, $width, IMG_COLOR_TRANSPARENT));
+			imagesetstyle($this->img, $style);
+		}
 		imageline($this->img, $x1, $y1, $x2, $y2, $this->allocAlphaColorHex($color));
 	}
 
@@ -39,9 +43,9 @@ class gdDrawingAgent implements drawingAgentIF{
 	 */
 	public function drawRectangle(float $x1, float $y1, float $x2, float $y2, color $color, bool $filled = true, float $width = 2): void{
 		if($filled){
-			imagefilledrectangle ($this->img, $x1, $y1, $x2, $y2, $this->allocAlphaColorHex($color));
+			imagefilledrectangle($this->img, $x1, $y1, $x2, $y2, $this->allocAlphaColorHex($color));
 		}else{
-			imagesetthickness ( $this->img, $width);
+			imagesetthickness($this->img, $width);
 			imagerectangle($this->img, $x1, $y1, $x2, $y2, $this->allocAlphaColorHex($color));
 		}
 	}
@@ -79,10 +83,10 @@ class gdDrawingAgent implements drawingAgentIF{
 	 */
 	public function drawArc(float $x, float $y, float $radius, float $start, float $end, color $color, bool $filled = true, float $width = 2): void{
 		if($filled){
-			imagefilledarc ( $this->img, $x, $y, $radius*2 , $radius*2 , $start , $end , $this->allocAlphaColorHex($color), IMG_ARC_PIE);
+			imagefilledarc($this->img, $x, $y, $radius*2, $radius*2, $start, $end, $this->allocAlphaColorHex($color), IMG_ARC_PIE);
 		}else{
-			imagesetthickness ( $this->img, $width);
-			imagearc ( $this->img, $x, $y, $radius , $radius , $start , $end , $this->allocAlphaColorHex($color));
+			imagesetthickness($this->img, $width);
+			imagearc($this->img, $x, $y, $radius, $radius, $start, $end, $this->allocAlphaColorHex($color));
 		}
 	}
 
@@ -90,7 +94,12 @@ class gdDrawingAgent implements drawingAgentIF{
 	 * draws a line through the given points
 	 */
 	public function drawPolyLine(array $points, float $width, color $color, bool $dashed = false):void{
-		imageopenpolygon ( $this->img , $points , count($points)/2 , $this->allocAlphaColorHex($color));
+		if($dashed){
+			$style = array_merge(array_fill(0, $width, $this->allocAlphaColorHex($color)), array_fill(0, $width, IMG_COLOR_TRANSPARENT));
+			imagesetstyle($this->img, $style);
+		}
+		imagesetthickness($this->img, $width);
+		imageopenpolygon ($this->img ,$points ,count($points)/2 ,$this->allocAlphaColorHex($color));
 	}
 
 	/**
@@ -98,10 +107,10 @@ class gdDrawingAgent implements drawingAgentIF{
 	 */
 	public function drawPolygon(array $points, color $color, bool $filled = true, float $width = 2):void{
 		if($filled){
-			imagefilledpolygon ( $this->img , $points , count($points)/2 , $this->allocAlphaColorHex($color));
+			imagefilledpolygon($this->img, $points, count($points)/2, $this->allocAlphaColorHex($color));
 		}else{
-			imagesetthickness ( $this->img, $width);
-			imagepolygon ( $this->img , $points , count($points)/2 , $this->allocAlphaColorHex($color));
+			imagesetthickness($this->img, $width);
+			imagepolygon($this->img ,$points ,count($points)/2 ,$this->allocAlphaColorHex($color));
 		}
 	}
 
