@@ -14,8 +14,8 @@ $da->drawArc(200,600,80,90,180,new color('#10A61050'));
 
 $points = array();
 for($i = 0; $i <= 100; $i++){
-    array_push($points, 400 + $i * 480 / 100);
-    array_push($points, 360 + sin($i / 100 * M_PI * 2) * 160);
+	array_push($points, 400 + $i * 480 / 100);
+	array_push($points, 360 + sin($i / 100 * M_PI * 2) * 160);
 }
 
 $da->drawPolyLine($points, 4, new color('#6010A0'));
