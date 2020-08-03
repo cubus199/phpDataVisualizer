@@ -6,7 +6,7 @@ require_once 'font.php';
 require_once 'env.php';
 
 const RAW_OUTPUT = 1;
-const PNG_BAS64_OUTPUT = 1;
+const PNG_BAS64_OUTPUT = 2;
 
 class gdDrawingAgent implements drawingAgentIF{
 	private $img;
