@@ -7,6 +7,7 @@ require_once 'env.php';
 
 const RAW_OUTPUT = 1;
 const PNG_BASE64_OUTPUT = 2;
+const JPEG_BASE64_OUTPUT = 3;
 
 class gdDrawingAgent implements drawingAgentIF{
 	private $img;
@@ -131,12 +132,18 @@ class gdDrawingAgent implements drawingAgentIF{
 
 	/**
 	 * outputs the image
+	 * direct return or encoded output possible
 	 */
 	public function finish(){
 		if($this->outputFile == RAW_OUTPUT){
 			return $this->img;
 		}else if($this->outputFile == PNG_BASE64_OUTPUT){
 			ob_start();
+			imagepng($this->img);
+			return base64_encode(ob_get_clean());
+		}else if($this->outputFile == JPEG_BASE64_OUTPUT){
+			ob_start();
+			imagejpeg($this->img);
 			return base64_encode(ob_get_clean());
 		}
 	}
