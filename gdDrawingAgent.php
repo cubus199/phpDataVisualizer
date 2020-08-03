@@ -6,7 +6,7 @@ require_once 'font.php';
 require_once 'env.php';
 
 const RAW_OUTPUT = 1;
-const PNG_BAS64_OUTPUT = 2;
+const PNG_BASE64_OUTPUT = 2;
 
 class gdDrawingAgent implements drawingAgentIF{
 	private $img;
@@ -133,9 +133,9 @@ class gdDrawingAgent implements drawingAgentIF{
 	 * outputs the image
 	 */
 	public function finish(){
-		if($this->outputFile = RAW_OUTPUT){
+		if($this->outputFile == RAW_OUTPUT){
 			return $this->img;
-		}else if($this->outputFile = PNG_BAS64_OUTPUT){
+		}else if($this->outputFile == PNG_BAS64_OUTPUT){
 			ob_start();
 			return base64_encode(ob_get_clean());
 		}
