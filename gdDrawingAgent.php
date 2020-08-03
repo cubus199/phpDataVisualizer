@@ -28,6 +28,7 @@ class gdDrawingAgent implements drawingAgentIF{
 		$colors = array();
 		array_push($colors, imagecolorallocatealpha($this->img, $backgroundColor->r, $backgroundColor->g, $backgroundColor->b, $backgroundColor->colorGDAlpha()));
 		imagefill($this->img, 0, 0, $colors[0]);
+		$this->outputFile = $outputFile;
 	}
 
 	/**
