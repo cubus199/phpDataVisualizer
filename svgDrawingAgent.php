@@ -76,8 +76,8 @@ class svgDrawingAgent implements drawingAgentIF{
 		$this->writeSVG('<path d="M '.($filled ? $x.' '.$y.' L': '').implode(' ', $startingPoint).' A '.$radius.' '.$radius.' 0 0 1 '.implode(' ', $endingPoint).' '.($filled ? 'Z' : '').'" style="'.($filled? 'fill' : 'stroke').': '.$color->colorHexAlpha().'" />');
 	}
 	
-	public function drawPolyLine(array $points, float $width, color $color): void{
-		$this->writeSVG('<polyline points="'.implode(' ', $points).'" style="stroke-linecap: round; fill: none; stroke:'.$color->colorHexAlpha().'; stroke-width:'.$width.'" />');
+	public function drawPolyLine(array $points, float $width, color $color, bool $dashed = false): void{
+		$this->writeSVG('<polyline points="'.implode(' ', $points).'" style="stroke-linecap: round; fill: none; stroke:'.$color->colorHexAlpha().'; stroke-width:'.$width.'; '.($dashed?'stroke-dasharray: '.($width*2).','.($width*2).';':'').'" />');
 	}
 
 	public function drawPolygon(array $points, color $color, bool $filled = true): void{

@@ -18,7 +18,7 @@ for($i = 0; $i <= 100; $i++){
 	array_push($points, 360 + sin($i / 100 * M_PI * 2) * 160);
 }
 
-$da->drawPolyLine($points, 4, new color('#6010A0'));
+$da->drawPolyLine($points, 2, new color('#6010A0'), true);
 
 $da->drawText(640, 360, 'Test', new font('FreeSans.ttf', 'FreeSans'), 80, new color('#000000'), CENTER, CENTER);
 
