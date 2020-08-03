@@ -8,15 +8,15 @@ class svgDrawingAgent implements drawingAgentIF{
 	private string $svg;
 	private float $width;
 	private float $height;
-	private color $color;
+	private color $backgroundColor;
 
-	public function __construct(float $width, float $height, color $color){
+	public function __construct(float $width, float $height, color $backgroundColor){
 		$this->width = $width;
 		$this->height = $height;
-		$this->color = $color;
+		$this->backgroundColor = $backgroundColor;
 
 		$this->resetSVG();
-		$this->writeSVG('<svg viewBox="0 0 '.$this->width.' '.$this->height.'" width="100%" style="box-sizing: border-box; background: '.$this->color->colorHexAlpha().'">');
+		$this->writeSVG('<svg viewBox="0 0 '.$this->width.' '.$this->height.'" width="100%" style="box-sizing: border-box; background: '.$this->backgroundColor->colorHexAlpha().'">');
 	}
 
 	public function finish(): string{
