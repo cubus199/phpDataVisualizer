@@ -4,7 +4,7 @@ require_once 'svgDrawingAgent.php';
 $da = new svgDrawingAgent(1280, 720, new color('#ffffff'));
 
 $da->drawRectangle(10,10,1270,710,new color('#A6101050'));
-$da->drawPolygon(array(640,200, 980,360, 640,520, 300,360),new color('#1010A650'));
+$da->drawPolygon(array(640,200, 980,360, 640,520, 300,360),new color('#1010A650'), false, 20);
 $da->drawLine(10,10,1270,710,4,new color('#A61010'));
 $da->drawLine(10,710,1270,10,4,new color('#A61010'));
 $da->drawArc(200,120,80,180,270,new color('#10A61050'));
