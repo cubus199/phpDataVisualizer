@@ -5,17 +5,21 @@ require_once 'color.php';
 require_once 'font.php';
 require_once 'env.php';
 
+const RAW_OUTPUT = 1;
+const PNG_BAS64_OUTPUT = 1;
+
 class gdDrawingAgent implements drawingAgentIF{
 	private $img;
 	private float $width;
 	private float $height;
 	private array $colors;
 	private color $backgroundColor;
+	private int $outputFile;
 	
 	/**
 	 * create a new GD drawing agent object
 	 */
-	public function __construct(float $width, float $height, color $backgroundColor){
+	public function __construct(float $width, float $height, color $backgroundColor, int $outputFile = RAW_OUTPUT){
 		$this->width = $width;
 		$this->height = $height;
 		$this->backgroundColor = $backgroundColor;
@@ -128,7 +132,12 @@ class gdDrawingAgent implements drawingAgentIF{
 	 * outputs the image
 	 */
 	public function finish(){
-		imagepng($this->img);
+		if($this->outputFile = RAW_OUTPUT){
+			return $this->img;
+		}else if($this->outputFile = PNG_BAS64_OUTPUT){
+			ob_start();
+			return base64_encode(ob_get_clean());
+		}
 	}
 }
 ?>
