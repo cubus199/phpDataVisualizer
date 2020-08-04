@@ -24,7 +24,7 @@ class svgDrawingAgent implements drawingAgentIF{
 	}
 
 	public function drawLine(float $x1, float $y1, float $x2, float $y2, float $width, color $color, bool $dashed = false): void{
-		$this->writeSVG('<line x1="'.$x1.'" y1="'.$y1.'" x2="'.$x2.'" y2="'.$y2.'" style="stroke:'.$color->colorHexAlpha().'; stroke-width: '.$width.'; stroke-linecap: round; '.($dashed?'stroke-dasharray: 4,4;':'').'" />');
+		$this->writeSVG('<line x1="'.$x1.'" y1="'.$y1.'" x2="'.$x2.'" y2="'.$y2.'" style="stroke:'.$color->colorHexAlpha().'; stroke-width: '.$width.'; stroke-linecap: round; '.($dashed?'stroke-dasharray: '.($width*2).','.($width*2).';':'').'" />');
 	}
 
 	public function drawRectangle(float $x1, float $y1, float $x2, float $y2, color $color, bool $filled = true, float $width = 2): void{

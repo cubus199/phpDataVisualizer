@@ -9,6 +9,9 @@ const RAW_OUTPUT = 1;
 const PNG_BASE64_OUTPUT = 2;
 const JPEG_BASE64_OUTPUT = 3;
 
+const DASH_SPACING = 4;
+const DASH_SIZE = 8;
+
 class gdDrawingAgent implements drawingAgentIF{
 	private $img;
 	private float $width;
@@ -35,13 +38,17 @@ class gdDrawingAgent implements drawingAgentIF{
 	/**
 	 * draws a line which connects two points
 	 */
-	public function drawLine(float $x1, float $y1, float $x2, float $y2, float $width, color $color, bool $dashed = true):void{
+	
+
+	public function drawLine(float $x1, float $y1, float $x2, float $y2, float $width, color $color, bool $dashed = false):void{
 		imagesetthickness($this->img, $width);
 		if($dashed){
-			$style = array_merge(array_fill(0, $width, $this->allocAlphaColorHex($color)), array_fill(0, $width, IMG_COLOR_TRANSPARENT));
+			$style = array_merge(array_fill(0, $width*DASH_SIZE, $this->allocAlphaColorHex($color)), array_fill(0, $width*DASH_SPACING, IMG_COLOR_TRANSPARENT));
 			imagesetstyle($this->img, $style);
+			imageline($this->img, $x1, $y1, $x2, $y2, IMG_COLOR_STYLED);
+		}else{
+			imageline($this->img, $x1, $y1, $x2, $y2, $this->allocAlphaColorHex($color));
 		}
-		imageline($this->img, $x1, $y1, $x2, $y2, $this->allocAlphaColorHex($color));
 	}
 
 	/**
@@ -100,12 +107,14 @@ class gdDrawingAgent implements drawingAgentIF{
 	 * draws a line through the given points
 	 */
 	public function drawPolyLine(array $points, float $width, color $color, bool $dashed = false):void{
-		if($dashed){
-			$style = array_merge(array_fill(0, $width, $this->allocAlphaColorHex($color)), array_fill(0, $width, IMG_COLOR_TRANSPARENT));
-			imagesetstyle($this->img, $style);
-		}
 		imagesetthickness($this->img, $width);
-		imageopenpolygon ($this->img ,$points ,count($points)/2 ,$this->allocAlphaColorHex($color));
+		if($dashed){
+			$style = array_merge(array_fill(0, $width*DASH_SIZE, $this->allocAlphaColorHex($color)), array_fill(0, $width*DASH_SPACING, IMG_COLOR_TRANSPARENT));
+			imagesetstyle($this->img, $style);
+			imageopenpolygon ($this->img ,$points ,count($points)/2 ,IMG_COLOR_STYLED);
+		}else{
+			imageopenpolygon ($this->img ,$points ,count($points)/2 ,$this->allocAlphaColorHex($color));
+		}
 	}
 
 	/**
