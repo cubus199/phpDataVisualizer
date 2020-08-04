@@ -29,12 +29,12 @@ class svgDrawingAgent implements drawingAgentIF{
 		$this->writeSVG('<line x1="'.$x1.'" y1="'.$y1.'" x2="'.$x2.'" y2="'.$y2.'" style="stroke:'.$color->colorHexAlpha().'; stroke-width: '.$width.'; stroke-linecap: round; '.($dashed?'stroke-dasharray: '.($width*2).','.($width*2).';':'').'" />');
 	}
 
-	public function drawRectangle(float $x1, float $y1, float $x2, float $y2, color $color, bool $filled = true, float $width = 2): void{
+	public function drawRectangle(float $x1, float $y1, float $x2, float $y2, color $color, bool $filled = true, float $linewidth = 2): void{
 		$x = min($x1 ,$x2);
 		$y = min($y1, $y2);
 		$width = abs(max($x1 ,$x2) - $x);
 		$height = abs(max($y1, $y2) - $y);
-		$this->writeSVG('<rect x="'.$x.'" y="'.$y.'" width="'.$width.'" height="'.$height.'" style="'.($filled ? 'fill' : 'fill: none; stroke-width:'.$width.'; stroke').': '.$color->colorHexAlpha().'; " />');
+		$this->writeSVG('<rect x="'.$x.'" y="'.$y.'" width="'.$width.'" height="'.$height.'" style="'.($filled ? 'fill' : 'fill: none; stroke-width:'.$linewidth.'; stroke').': '.$color->colorHexAlpha().'; " />');
 	}
 
 	public function drawText(float $x, float $y, string $text, font $font, float $size, color $color, int $xAlign = LEFT, int $yAlign = BOTTOM, float $angle = 0): void{
@@ -56,7 +56,7 @@ class svgDrawingAgent implements drawingAgentIF{
 				$ta = 'end';
 		}
 		
-		$textHeight = functionProvider::calcTextDim($font, $size, $text)['y'];
+		//$textHeight = functionProvider::calcTextDim($font, $size, $text)['y'];
 
 		switch($yAlign){
 			default:
