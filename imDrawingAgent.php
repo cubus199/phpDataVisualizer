@@ -83,11 +83,24 @@ class imDrawingAgent implements drawingAgentIF{
 	}
 
 	public function drawRectangle(float $x1, float $y1, float $x2, float $y2, color $color, bool $filled = true, float $width = 2): void{
-		//$x = min($x1 ,$x2);
-		//$y = min($y1, $y2);
-		//$width = abs(max($x1 ,$x2) - $x);
-		//$height = abs(max($y1, $y2) - $y);
-		//$this->writeSVG('<rect x="'.$x.'" y="'.$y.'" width="'.$width.'" height="'.$height.'" style="'.($filled ? 'fill' : 'fill: none; stroke-width:'.$width.'; stroke').': '.$color->colorHexAlpha().'; " />');
+		$draw = new \ImagickDraw();
+		$draw->setStrokeColor($color->colorHexAlpha());
+		$draw->setFillColor($color->colorHexAlpha());
+		if(!$filled){
+			$draw->setFillOpacity(0);
+		}else{
+			$draw->setStrokeOpacity(0);
+		}
+		$draw->setStrokeWidth($width);
+		$draw->setStrokeLineCap(\Imagick::LINECAP_ROUND);
+
+		$a1 = min($x1 ,$x2);
+		$b1 = min($y1, $y2);
+		$a2 = max($x1 ,$x2);
+		$b2 = max($y1, $y2);
+
+		$draw->rectangle($a1, $b1, $a2, $b2);
+		$this->im->drawImage($draw);
 	}
 
 	public function drawText(float $x, float $y, string $text, font $font, float $size, color $color, int $xAlign = LEFT, int $yAlign = BOTTOM, float $angle = 0): void{
@@ -95,50 +108,125 @@ class imDrawingAgent implements drawingAgentIF{
 		$transform = '';
 		if($angle != 0){
 			$transform = 'transform="rotate('.$angle.' '.$x.','.$y.')"';
-		}
+		}*/
 
 		switch($xAlign){
 			default:
 			case LEFT:
-				$ta = 'start';
+				$xa = \Imagick::ALIGN_LEFT;
 				break;
 			case CENTER:
-				$ta = 'middle';
+				$xa = \Imagick::ALIGN_CENTER;
 				break;
 			case RIGHT:
-				$ta = 'end';
+				$xa = \Imagick::ALIGN_RIGHT;
 		}
-		
+
 		$textHeight = functionProvider::calcTextDim($font, $size, $text)['y'];
 
 		switch($yAlign){
 			default:
 			case BOTTOM:
-				$db = 'ideographic';
+				$ya = 0;
 				break;
 			case CENTER:
-				$db = 'central';
+				$ya = $textHeight / 2;
 				break;
 			case TOP:
-				$db = 'hanging';
+				$ya = $textHeight;
 		}
+
+		$draw = new \ImagickDraw();
+		$draw->setTextAlignment($xa);
+		$draw->setFontSize($size*1.2);
+		$draw->setFont(REMOTE_FONT_DIR.'/'.$font->path);
+		$draw->setFillColor($color->colorHexAlpha());
+		$draw->setStrokeOpacity(0);
+
+		if($angle != 0) $draw->rotate($angle);
+		$draw->annotation($x, $y + $ya, $text);
+		
+		$this->im->drawImage($draw);
+		/*
+		$textHeight = functionProvider::calcTextDim($font, $size, $text)['y'];
+
+		
 		$this->writeSVG('<text x="'.$x.'" y="'.$y.'" text-anchor="'.$ta.'" dominant-baseline="'.$db.'" style="fill:'.$color->colorHexAlpha().'; font-family: '.$font->name.'; font-size: '.$size.'pt" '.$transform.'>'.$text.'</text>');
 		*/
 	}
 	
 	public function drawArc(float $x, float $y, float $radius, float $start, float $end, color $color, bool $filled = true, float $width = 2): void{
-		//$threeOclock = array($x + $radius, $y);
-		//$startingPoint = functionProvider::rotatePoint($threeOclock, array($x, $y), $start);
-		//$endingPoint = functionProvider::rotatePoint($threeOclock, array($x, $y), $end);
-		//$this->writeSVG('<path d="M '.($filled ? $x.' '.$y.' L': '').implode(' ', $startingPoint).' A '.$radius.' '.$radius.' 0 0 1 '.implode(' ', $endingPoint).' '.($filled ? 'Z' : '').'" style="'.($filled? 'fill' : 'fill: none; stroke-width:'.$width.'; stroke').': '.$color->colorHexAlpha().'" />');
+		$draw = new \ImagickDraw();
+		$draw->setStrokeColor($color->colorHexAlpha());
+		$draw->setFillColor($color->colorHexAlpha());
+
+		if(!$filled){
+			$draw->setFillOpacity(0);
+		}else{
+			$draw->setStrokeOpacity(0);
+		}
+
+		$draw->setStrokeWidth($width);
+		$draw->setStrokeLineCap(\Imagick::LINECAP_ROUND);
+
+		$threeOclock = array($x + $radius, $y);
+		$startingPoint = functionProvider::rotatePoint($threeOclock, array($x, $y), $start);
+		$endingPoint = functionProvider::rotatePoint($threeOclock, array($x, $y), $end);
+		$draw->pathStart();
+		if($filled){
+			$draw->pathMoveToAbsolute($x, $y);
+			$draw->pathLineToAbsolute($startingPoint[0], $startingPoint[1]);
+		}else{
+			$draw->pathMoveToAbsolute($startingPoint[0], $startingPoint[1]);
+		}
+		$draw->pathEllipticArcAbsolute ($radius, $radius, 0, 0, true, $endingPoint[0], $endingPoint[1]);
+		$draw->pathClose();
+		$draw->pathFinish();
+		$this->im->drawImage($draw);
 	}
 	
 	public function drawPolyLine(array $points, float $width, color $color, bool $dashed = false): void{
-		//$this->writeSVG('<polyline points="'.implode(' ', $points).'" style="stroke-linecap: round; fill: none; stroke:'.$color->colorHexAlpha().'; stroke-width:'.$width.'; '.($dashed?'stroke-dasharray: '.($width*2).','.($width*2).';':'').'" />');
+		$draw = new \ImagickDraw();
+		$draw->setStrokeColor($color->colorHexAlpha());
+		$draw->setFillOpacity(0);
+		$draw->setStrokeWidth($width);
+		$draw->setStrokeLineCap(\Imagick::LINECAP_ROUND);
+		if($dashed){
+			$draw->setStrokeDashArray(array($width*2,$width*2));
+		}
+
+		$coordinates = array();
+
+		for($i = 0; $i < count($points) - 1; $i += 2){
+			array_push($coordinates, array('x'=>$points[$i], 'y'=>$points[$i+1]));
+		}
+
+		$draw->polyline($coordinates);
+		$this->im->drawImage($draw);
 	}
 
 	public function drawPolygon(array $points, color $color, bool $filled = true, float $width = 2): void{
-		//$this->writeSVG('<polygon points="'.implode(' ', $points).'" style="'.($filled ? 'fill' : 'fill: none; stroke-width:'.$width.'; stroke').':'.$color->colorHexAlpha().'" />');
+		$draw = new \ImagickDraw();
+		$draw->setStrokeColor($color->colorHexAlpha());
+		$draw->setFillColor($color->colorHexAlpha());
+
+		if(!$filled){
+			$draw->setFillOpacity(0);
+		}else{
+			$draw->setStrokeOpacity(0);
+		}
+
+		$draw->setStrokeWidth($width);
+		$draw->setStrokeLineCap(\Imagick::LINECAP_ROUND);
+
+		$coordinates = array();
+
+		for($i = 0; $i < count($points) - 1; $i += 2){
+			array_push($coordinates, array('x'=>$points[$i], 'y'=>$points[$i+1]));
+		}
+
+		$draw->polygon($coordinates);
+		$this->im->drawImage($draw);
 	}
 
 }
