@@ -10,7 +10,7 @@ class svgDrawingAgent implements drawingAgentIF{
 	private float $width;
 	private float $height;
 	private color $backgroundColor;
-	private array $fonts;
+	private array $fonts = array();
 
 	public function __construct(float $width, float $height, color $backgroundColor){
 		$this->width = $width;
