@@ -3,12 +3,14 @@ require_once 'drawingAgentIF.php';
 require_once 'functionProvider.php';
 require_once 'color.php';
 require_once 'font.php';
+require_once 'env.php';
 
 class svgDrawingAgent implements drawingAgentIF{
 	private string $svg;
 	private float $width;
 	private float $height;
 	private color $backgroundColor;
+	private array $fonts;
 
 	public function __construct(float $width, float $height, color $backgroundColor){
 		$this->width = $width;
@@ -20,7 +22,7 @@ class svgDrawingAgent implements drawingAgentIF{
 	}
 
 	public function finish(): string{
-		return $this->getSVG().'</svg>';
+		return $this->getSVG().$this->createCSS().'</svg>';
 	}
 
 	public function drawLine(float $x1, float $y1, float $x2, float $y2, float $width, color $color, bool $dashed = false): void{
@@ -36,6 +38,7 @@ class svgDrawingAgent implements drawingAgentIF{
 	}
 
 	public function drawText(float $x, float $y, string $text, font $font, float $size, color $color, int $xAlign = LEFT, int $yAlign = BOTTOM, float $angle = 0): void{
+		$this->registerFont($font);
 		$transform = '';
 		if($angle != 0){
 			$transform = 'transform="rotate('.$angle.' '.$x.','.$y.')"';
@@ -82,6 +85,20 @@ class svgDrawingAgent implements drawingAgentIF{
 
 	public function drawPolygon(array $points, color $color, bool $filled = true, float $width = 2): void{
 		$this->writeSVG('<polygon points="'.implode(' ', $points).'" style="'.($filled ? 'fill' : 'fill: none; stroke-width:'.$width.'; stroke').':'.$color->colorHexAlpha().'" />');
+	}
+
+	private function registerFont(font $font){
+		if(!isset($this->fonts[$font->name])){
+			$this->fonts[$font->name] = $font;
+		}
+	}
+
+	private function createCSS(){
+		$css = '<style>';
+		foreach($this->fonts as $font){
+			$css .='@font-face{ font-family: '.$font->name.'; src: url('.REMOTE_FONT_DIR.'/'.$font->path.');}';
+		}
+		return $css.'</style>';
 	}
 
 	private function getSVG(): string{
