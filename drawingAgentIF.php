@@ -10,6 +10,11 @@ define('CENTER', 2);
 define('TOP', 3);
 define('BOTTOM', 4);
 
+const RAW_OUTPUT = 1; //also png with imagick
+const PNG_BASE64_OUTPUT = 2;
+const JPG_BASE64_OUTPUT = 3;
+const JPEG_BASE64_OUTPUT = 3;
+
 interface drawingAgentIF{
 	public function finish(); //finishes graph-drawing and returns product
 

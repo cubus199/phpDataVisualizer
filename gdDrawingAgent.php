@@ -5,10 +5,6 @@ require_once 'color.php';
 require_once 'font.php';
 require_once 'env.php';
 
-const RAW_OUTPUT = 1;
-const PNG_BASE64_OUTPUT = 2;
-const JPEG_BASE64_OUTPUT = 3;
-
 const DASH_SPACING = 4;
 const DASH_SIZE = 8;
 
