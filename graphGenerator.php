@@ -16,6 +16,9 @@ class graphGenerator{
 		$this->dA = $dA;
 	}
 
+	/**
+	 * draws a symbol on given poition
+	 */
     private function drawSymbol(float $x, float $y, int $type, color $color, float $size){
 		$radius = $size / 2;
 		switch($type){
