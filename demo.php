@@ -48,4 +48,18 @@ print_r($out[0]);
 echo '<img src="data:image/png;base64,'.$out[1].'" width="100%" height="auto">';
 echo '<img src="data:image/png;base64,'.$out[2].'" width="100%" height="auto">';
 
+require_once 'graphHelper/GraphData.php';
+require_once 'graphHelper/LineGraph.php';
+$im = new imDrawingAgent(1920, 1080, new color('#ffffff'), PNG_BASE64_OUTPUT);
+$graph = new GraphData(array(new Dataset(0,array(0))), array(new color('#000000')));
+$graph->addDataset(new Dataset(0.2, array(0.5)));
+$graph->addDataset(new Dataset(1, array(1)));
+$linegraph = new LineGraph($graph);
+$linegraph->drawGraph($im, new GraphScaling(0,0,1920,1080,1,1,0,0));
+$graph = new GraphData(array(new Dataset(0,array(1))), array(new color('#00FF00')));
+$graph->addDataset(new Dataset(0.8, array(0.5)));
+$graph->addDataset(new Dataset(1, array(0)));
+$linegraph = new LineGraph($graph);
+$linegraph->drawGraph($im, new GraphScaling(0,0,1920,1080,1,1,0,0));
+echo '<img src="data:image/png;base64,'.$im->finish().'" width="100%" height="auto">';
 ?>

@@ -24,16 +24,16 @@ class GraphScaling{
 	 * calculates the X scaling according to the given limits
 	 */
 	public function calcScaleX(){
-		$height = $x2 - $x1;
-		return $height / ($maxX - $minX);
+		$height = $this->graphX2 - $this->graphX1;
+		return $height / ($this->maxX - $this->minX);
 	}
 
 	/**
 	 * calculates the y scaling according to the given limits
 	 */
 	public function calcScaleY(){
-		$width = $y2 - $y1;
-		return $width / ($maxY - $minY);
+		$width = $this->graphY2 - $this->graphY1;
+		return $width / ($this->maxY - $this->minY);
 	}
 }
 ?>
