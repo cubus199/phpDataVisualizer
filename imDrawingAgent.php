@@ -8,6 +8,7 @@ require_once 'env.php';
 
 const IM_DASH_SPACING = 4;
 const IM_DASH_SIZE = 8;
+const FONTSIZE_FACTOR = 1.28;
 
 class imDrawingAgent implements drawingAgentIF{
 	private $im;
@@ -110,49 +111,19 @@ class imDrawingAgent implements drawingAgentIF{
 			$transform = 'transform="rotate('.$angle.' '.$x.','.$y.')"';
 		}*/
 
-		switch($xAlign){
-			default:
-			case LEFT:
-				$xa = \Imagick::ALIGN_LEFT;
-				break;
-			case CENTER:
-				$xa = \Imagick::ALIGN_CENTER;
-				break;
-			case RIGHT:
-				$xa = \Imagick::ALIGN_RIGHT;
-		}
-
-		$textHeight = functionProvider::calcTextDim($font, $size, $text)['y'];
-
-		switch($yAlign){
-			default:
-			case BOTTOM:
-				$ya = 0;
-				break;
-			case CENTER:
-				$ya = $textHeight / 2;
-				break;
-			case TOP:
-				$ya = $textHeight;
-		}
+		$gr = $this->calcGravity($x, $y, $xAlign, $yAlign);
 
 		$draw = new \ImagickDraw();
-		$draw->setTextAlignment($xa);
-		$draw->setFontSize($size*1.2);
+		$draw->setGravity($gr[2]);
+		$draw->setFontSize($size*FONTSIZE_FACTOR);
 		$draw->setFont(REMOTE_FONT_DIR.'/'.$font->path);
 		$draw->setFillColor($color->colorHexAlpha());
 		$draw->setStrokeOpacity(0);
 
-		if($angle != 0) $draw->rotate($angle);
-		$draw->annotation($x, $y + $ya, $text);
+		//if($angle != 0) $draw->rotate($angle);
+		$this->im->annotateImage($draw, $gr[0], $gr[1], $angle, $text);
 		
 		$this->im->drawImage($draw);
-		/*
-		$textHeight = functionProvider::calcTextDim($font, $size, $text)['y'];
-
-		
-		$this->writeSVG('<text x="'.$x.'" y="'.$y.'" text-anchor="'.$ta.'" dominant-baseline="'.$db.'" style="fill:'.$color->colorHexAlpha().'; font-family: '.$font->name.'; font-size: '.$size.'pt" '.$transform.'>'.$text.'</text>');
-		*/
 	}
 	
 	public function drawArc(float $x, float $y, float $radius, float $start, float $end, color $color, bool $filled = true, float $width = 2): void{
@@ -229,5 +200,37 @@ class imDrawingAgent implements drawingAgentIF{
 		$this->im->drawImage($draw);
 	}
 
+	private function calcGravity(float $x, float $y, int $xAlign, int $yAlign){
+		switch($xAlign){
+			default:
+			case LEFT:
+				$xa = 'WEST';
+				break;
+			case CENTER:
+				$xa = '';
+				$x -= $this->width /2;
+				break;
+			case RIGHT:
+				$xa = 'EAST';
+		}
+
+		switch($yAlign){
+			default:
+			case BOTTOM:
+				$ya = 'SOUTH';
+				break;
+			case CENTER:
+				$ya = '';
+				$y -= $this->height / 2;
+				break;
+			case TOP:
+				$ya = 'NORTH';
+		}
+
+		$gr = $ya.$xa;
+		if($gr == '') $gr = 'CENTER';
+
+		return array($x, $y, constant('\Imagick::GRAVITY_'.$gr));
+	}
 }
 ?>

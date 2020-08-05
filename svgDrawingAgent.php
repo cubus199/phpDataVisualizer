@@ -61,7 +61,7 @@ class svgDrawingAgent implements drawingAgentIF{
 		switch($yAlign){
 			default:
 			case BOTTOM:
-				$db = 'ideographic';
+				$db = 'unset';
 				break;
 			case CENTER:
 				$db = 'central';

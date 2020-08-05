@@ -84,7 +84,7 @@ class gdDrawingAgent implements drawingAgentIF{
 			case TOP:
 				$y += $textDim['startY'];
 		}		
-		imagefttext($this->img, $size, $angle, $x, $y, $this->allocAlphaColorHex($color), FONT_DIR.DIRECTORY_SEPARATOR.$font->path, $text);
+		imagefttext($this->img, $size, 360 - $angle, $x, $y, $this->allocAlphaColorHex($color), FONT_DIR.DIRECTORY_SEPARATOR.$font->path, $text);
 	}
 
 	/**

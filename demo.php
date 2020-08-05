@@ -36,7 +36,7 @@ foreach($das as $da){
 
 	$da->drawPolyLine($points, 2, new color('#6010A0'), true);
 
-	$da->drawText(640, 360, 'Test', new font('FreeSans.ttf', 'FreeSans'), 80, new color('#000000'), CENTER, CENTER, 90);
+	$da->drawText(640, 360, 'Test', new font('FreeSans.ttf', 'FreeSans'), 80, new color('#000000'), CENTER, CENTER);
 	$da->drawText(40, 20, $names[$j], new font('FreeSans.ttf', 'FreeSans'), 50, new color('#000000'), LEFT, TOP);
 
 	$out[$j] = $da->finish();
