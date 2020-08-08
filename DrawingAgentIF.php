@@ -1,7 +1,7 @@
 <?php
 
-require_once 'color.php';
-require_once 'font.php';
+require_once 'Color.php';
+require_once 'Font.php';
 
 // constants for alignment
 define('LEFT', 0);
@@ -15,7 +15,7 @@ const PNG_BASE64_OUTPUT = 2;
 const JPG_BASE64_OUTPUT = 3;
 const JPEG_BASE64_OUTPUT = 3;
 
-interface drawingAgentIF{
+interface DrawingAgentIF{
 	public function finish(); //finishes graph-drawing and returns product
 
     /**

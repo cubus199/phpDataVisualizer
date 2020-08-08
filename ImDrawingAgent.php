@@ -1,8 +1,8 @@
 <?php
-require_once 'drawingAgentIF.php';
-require_once 'functionProvider.php';
-require_once 'color.php';
-require_once 'font.php';
+require_once 'DrawingAgentIF.php';
+require_once 'FunctionProvider.php';
+require_once 'Color.php';
+require_once 'Font.php';
 require_once 'env.php';
 
 
@@ -10,7 +10,7 @@ const IM_DASH_SPACING = 4;
 const IM_DASH_SIZE = 8;
 const FONTSIZE_FACTOR = 1.28;
 
-class imDrawingAgent implements drawingAgentIF{
+class ImDrawingAgent implements drawingAgentIF{
 	private $im;
 	private float $width;
 	private float $height;

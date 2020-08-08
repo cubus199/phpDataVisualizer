@@ -1,7 +1,7 @@
 <?php
 require_once 'env.php';
 
-class functionProvider{
+class FunctionProvider{
 
     public static function rotatePoint(array $point, array $origin, float $angle): array{
         if($angle >= 360) $angle %= 360; //normalize angles

@@ -1,11 +1,11 @@
 <?php
-require_once 'drawingAgentIF.php';
-require_once 'functionProvider.php';
-require_once 'color.php';
-require_once 'font.php';
+require_once 'DrawingAgentIF.php';
+require_once 'FunctionProvider.php';
+require_once 'Color.php';
+require_once 'Font.php';
 require_once 'env.php';
 
-class svgDrawingAgent implements drawingAgentIF{
+class SvgDrawingAgent implements drawingAgentIF{
 	private string $svg;
 	private float $width;
 	private float $height;

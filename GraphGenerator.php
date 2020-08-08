@@ -1,5 +1,5 @@
 <?php
-require_once 'drawingAgentIF.php';
+require_once 'DrawingAgentIF.php';
 
 // constants for symbols; can also be retrieved by constant('name')
 define('CIRCLE', 0);
@@ -8,7 +8,7 @@ define('TRIANGLE', 2);
 define('CROSS', 3);
 define('DIAMOND', 4);
 
-class graphGenerator{
+class GraphGenerator{
 
 	public drawingAgentIF $dA;
 

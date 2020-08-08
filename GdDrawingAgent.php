@@ -1,24 +1,28 @@
 <?php
-require_once 'drawingAgentIF.php';
-require_once 'functionProvider.php';
-require_once 'color.php';
-require_once 'font.php';
+require_once 'DrawingAgentIF.php';
+require_once 'FunctionProvider.php';
+require_once 'Color.php';
+require_once 'Font.php';
 require_once 'env.php';
 
 const DASH_SPACING = 4;
 const DASH_SIZE = 8;
 
-class gdDrawingAgent implements drawingAgentIF{
+class GdDrawingAgent implements drawingAgentIF{
 	private $img;
 	private float $width;
 	private float $height;
 	private array $colors;
 	private color $backgroundColor;
 	private int $outputFile;
-	
-	/**
-	 * create a new GD drawing agent object
-	 */
+
+    /**
+     * create a new GD drawing agent object
+     * @param float $width
+     * @param float $height
+     * @param color $backgroundColor
+     * @param int $outputFile
+     */
 	public function __construct(float $width, float $height, color $backgroundColor, int $outputFile = RAW_OUTPUT){
 		$this->width = $width;
 		$this->height = $height;
@@ -31,9 +35,16 @@ class gdDrawingAgent implements drawingAgentIF{
 		$this->outputFile = $outputFile;
 	}
 
-	/**
-	 * draws a line which connects two points
-	 */
+    /**
+     * draws a line which connects two points
+     * @param float $x1
+     * @param float $y1
+     * @param float $x2
+     * @param float $y2
+     * @param float $width
+     * @param color $color
+     * @param bool $dashed
+     */
 	
 
 	public function drawLine(float $x1, float $y1, float $x2, float $y2, float $width, color $color, bool $dashed = false):void{
@@ -47,9 +58,16 @@ class gdDrawingAgent implements drawingAgentIF{
 		}
 	}
 
-	/**
-	 * draws a rectangle which connects two points
-	 */
+    /**
+     * draws a rectangle which connects two points
+     * @param float $x1
+     * @param float $y1
+     * @param float $x2
+     * @param float $y2
+     * @param color $color
+     * @param bool $filled
+     * @param float $width
+     */
 	public function drawRectangle(float $x1, float $y1, float $x2, float $y2, color $color, bool $filled = true, float $width = 2): void{
 		if($filled){
 			imagefilledrectangle($this->img, $x1, $y1, $x2, $y2, $this->allocAlphaColorHex($color));
@@ -59,9 +77,18 @@ class gdDrawingAgent implements drawingAgentIF{
 		}
 	}
 
-	/**
-	 * write text starting on one point possitioned according to the params
-	 */
+    /**
+     * write text starting on one point possitioned according to the params
+     * @param float $x
+     * @param float $y
+     * @param string $text
+     * @param font $font
+     * @param float $size
+     * @param color $color
+     * @param int $xAlign
+     * @param int $yAlign
+     * @param float $angle
+     */
 	public function drawText(float $x, float $y, string $text, font $font, float $size, color $color, int $xAlign = LEFT, int $yAlign = BOTTOM, float $angle = 0):void{
 		$textDim = functionProvider::calcTextDim($font, $size, $text);
 		switch($xAlign){
@@ -87,9 +114,17 @@ class gdDrawingAgent implements drawingAgentIF{
 		imagefttext($this->img, $size, 360 - $angle, $x, $y, $this->allocAlphaColorHex($color), FONT_DIR.DIRECTORY_SEPARATOR.$font->path, $text);
 	}
 
-	/**
-	 * Draws a partial arc centered at a specified point
-	 */
+    /**
+     * Draws a partial arc centered at a specified point
+     * @param float $x
+     * @param float $y
+     * @param float $radius
+     * @param float $start
+     * @param float $end
+     * @param color $color
+     * @param bool $filled
+     * @param float $width
+     */
 	public function drawArc(float $x, float $y, float $radius, float $start, float $end, color $color, bool $filled = true, float $width = 2): void{
 		if($filled){
 			imagefilledarc($this->img, $x, $y, $radius*2, $radius*2, $start, $end, $this->allocAlphaColorHex($color), IMG_ARC_PIE);
@@ -99,9 +134,13 @@ class gdDrawingAgent implements drawingAgentIF{
 		}
 	}
 
-	/**
-	 * draws a line through the given points
-	 */
+    /**
+     * draws a line through the given points
+     * @param array $points
+     * @param float $width
+     * @param color $color
+     * @param bool $dashed
+     */
 	public function drawPolyLine(array $points, float $width, color $color, bool $dashed = false):void{
 		imagesetthickness($this->img, $width);
 		if($dashed){
@@ -113,9 +152,13 @@ class gdDrawingAgent implements drawingAgentIF{
 		}
 	}
 
-	/**
-	 * connects the given points, filled or not filled
-	 */
+    /**
+     * connects the given points, filled or not filled
+     * @param array $points
+     * @param color $color
+     * @param bool $filled
+     * @param float $width
+     */
 	public function drawPolygon(array $points, color $color, bool $filled = true, float $width = 2):void{
 		if($filled){
 			imagefilledpolygon($this->img, $points, count($points)/2, $this->allocAlphaColorHex($color));
@@ -127,8 +170,9 @@ class gdDrawingAgent implements drawingAgentIF{
 
 	/*
 	 * allocate new color
+	 * @return int color
 	 */
-	function allocAlphaColorHex(color $color): int{
+	private function allocAlphaColorHex(color $color): int{
 		if(!isset($this->colors[$color->colorHexAlpha()])){
 			$this->colors[$color->colorHexAlpha()] = imagecolorallocatealpha($this->img, $color->r, $color->g, $color->b, $color->colorGDAlpha());
 		}
@@ -138,6 +182,7 @@ class gdDrawingAgent implements drawingAgentIF{
 	/**
 	 * outputs the image
 	 * direct return or encoded output possible
+     * @return string|resource
 	 */
 	public function finish(){
 		if($this->outputFile == RAW_OUTPUT){

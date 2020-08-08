@@ -1,7 +1,7 @@
 <?php
-require_once 'svgDrawingAgent.php';
-require_once 'gdDrawingAgent.php';
-require_once 'imDrawingAgent.php';
+require_once 'SvgDrawingAgent.php';
+require_once 'GdDrawingAgent.php';
+require_once 'ImDrawingAgent.php';
 
 $names = array(
 	'SVG',
@@ -11,7 +11,7 @@ $names = array(
 
 $das = array(
 	new svgDrawingAgent(1280, 720, new color('#ffffff')),
-	new imDrawingAgent(1280, 720, new color('#ffffff'), PNG_BASE64_OUTPUT),
+	new ImDrawingAgent(1280, 720, new color('#ffffff'), PNG_BASE64_OUTPUT),
 	new gdDrawingAgent(1280, 720, new color('#ffffff'), PNG_BASE64_OUTPUT)
 );
 

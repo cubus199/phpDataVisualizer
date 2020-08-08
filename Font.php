@@ -1,5 +1,5 @@
 <?php
-class font{
+class Font{
 	public string $path;
 	public string $name;
 
