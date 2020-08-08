@@ -20,17 +20,19 @@ class GraphScaling{
 		$this->minY = $minY;
 	}
 
-	/**
-	 * calculates the X scaling according to the given limits
-	 */
+    /**
+     * calculates the X scaling according to the given limits
+     * @return float|int x scaling factor
+     */
 	public function calcScaleX(){
 		$height = $this->graphX2 - $this->graphX1;
 		return $height / ($this->maxX - $this->minX);
 	}
 
-	/**
-	 * calculates the y scaling according to the given limits
-	 */
+    /**
+     * calculates the y scaling according to the given limits
+     * @return float|int y scaling factor
+     */
 	public function calcScaleY(){
 		$width = $this->graphY2 - $this->graphY1;
 		return $width / ($this->maxY - $this->minY);

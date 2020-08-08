@@ -5,32 +5,38 @@ class GraphData{
 	public array $row_colors;
 	public array $row_symbols;
 
-	/**
-	 * creates a new GraphData object
-	 */
+    /**
+     * creates a new GraphData object
+     * @param array $datasets
+     * @param array $row_colors
+     * @param array $row_symbols
+     */
 	public function __construct(array $datasets, array $row_colors = array(), array $row_symbols = array()){
 		$this->datasets = $datasets;
 		$this->row_colors = $row_colors;
 		$this->row_symbols = $row_symbols;
 	}
 
-	/**
-	 * add a new dataset to the GraphData object
-	 */
+    /**
+     * add a new dataset to the GraphData object
+     * @param Dataset $dataset
+     */
 	public function addDataset(Dataset $dataset) : void{
 		array_push($this->datasets, $dataset);
 	}
 
-	/**
-	 * return all Datasets
-	 */
+    /**
+     * return all Datasets
+     * @return array of datasets
+     */
 	public function getDatasets() : array{
 		return $this->datasets;
 	}
 
-	/**
-	 * get the data limits
-	 */
+    /**
+     * get the data limits
+     * @return GraphScaling object containing all important scaling information, needs to be resized
+     */
 	public function getLimits(){
 		$maxX = 0;
 		$minX = 0;

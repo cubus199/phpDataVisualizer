@@ -3,9 +3,11 @@ require_once 'GraphIF.php';
 require_once 'GraphData.php';
 class LineGraph implements GraphIF{
 	public GraphData $gData;
-	/**
-	 * creating a new LineGraph object
-	 */
+
+    /**
+     * creating a new LineGraph object
+     * @param GraphData $gData
+     */
 	public function __construct(GraphData $gData){
 		$this->gData = $gData;
 	}
@@ -17,9 +19,11 @@ class LineGraph implements GraphIF{
 		return $this->gData->getLimits();
 	}
 
-	/**
-	 * drawing finally the graph
-	 */
+    /**
+     * drawing finally the graph
+     * @param drawingAgentIF $drawingAgentIF
+     * @param GraphScaling $scale
+     */
 	public function drawGraph(drawingAgentIF &$drawingAgentIF, GraphScaling $scale) : void{
 		$points = array();
 		foreach($this->gData->getDatasets() as $dataset){
