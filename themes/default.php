@@ -14,7 +14,6 @@
 		"rightPadding" => 20,
 		"topPadding" => 20,
 		"bottomPadding" => 20,
-		"colLabelRotation" => 90,					// rotation of the column labels
 		"graphComponentSpacing"=>30,				// spacing between graphing-elements like bars of a bar-graph
 		"graphSubComponentSpacing"=>10,				// spacing of sub-components of graphing-elements
 
@@ -49,6 +48,7 @@
 		"xUnit" => '',								// Unit displayed besides the labels at the x-axis
 		"yUnit" => '',								// Unit displayed besides the labels at the y-axis
 		"labelPadding" => 5,
+		"colLabelRotation" => 90,					// rotation of the column labels
 
 		// graph
 		"graphLineThickness"=>3,					// thickness of the line of line-graphs
